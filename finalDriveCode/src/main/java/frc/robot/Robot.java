@@ -7,9 +7,12 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,12 +21,19 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
  * project.
  */
 public class Robot extends TimedRobot {
-  Joystick m_joystick = new Joystick(0);
-  CANSparkMax m_leftFront = new CANSparkMax(1, MotorType.kBrushless);
-  CANSparkMax m_rightFront = new CANSparkMax(2, MotorType.kBrushless);
-  CANSparkMax m_leftBack = new CANSparkMax(3, MotorType.kBrushless);
-  CANSparkMax m_rightBack = new CANSparkMax(4, MotorType.kBrushless);
-  MecanumDrive m_Drive = new MecanumDrive(m_leftFront, m_leftBack, m_rightFront, m_rightBack);
+  private Joystick m_joystick = new Joystick(0);
+  private CANSparkMax m_leftFront = new CANSparkMax(1, MotorType.kBrushless);
+  private CANSparkMax m_rightFront = new CANSparkMax(2, MotorType.kBrushless);
+  private CANSparkMax m_leftBack = new CANSparkMax(3, MotorType.kBrushless);
+  private CANSparkMax m_rightBack = new CANSparkMax(4, MotorType.kBrushless);
+  private MecanumDrive m_Drive = new MecanumDrive(m_leftFront, m_leftBack, m_rightFront, m_rightBack);
+  private ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+
+  private static final double kP = 0.005;
+  private static final double kI = 0;
+  private static final double kD = 0;
+  private static final double kF = 0;
+  private PIDController m_pidController = new PIDController(kP, kI, kD);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -37,6 +47,11 @@ public class Robot extends TimedRobot {
     m_rightFront.restoreFactoryDefaults();
     m_rightBack.setInverted(true);
     m_rightFront.setInverted(true);
+
+    m_pidController.disableContinuousInput();
+
+    SmartDashboard.putData("Drivetrain", m_Drive);
+    SmartDashboard.putData("Gyro", m_gyro);
   }
 
 
@@ -63,27 +78,16 @@ public class Robot extends TimedRobot {
     m_Drive.driveCartesian(-m_joystick.getRawAxis(1), m_joystick.getRawAxis(0), m_joystick.getRawAxis(4));
   }
 
-  /** This function is called once when the robot is disabled. */
-  @Override
-  public void disabledInit() {}
+  public void gyroAssistDriveCartesian(double ySpeed, double xSpeed, double rot) {
+    m_Drive.driveCartesian(ySpeed, xSpeed, rot);
+  }
 
-  /** This function is called periodically when disabled. */
-  @Override
-  public void disabledPeriodic() {}
+  public void gyroAssistDrivePolar() {
 
-  /** This function is called once when test mode is enabled. */
-  @Override
-  public void testInit() {}
+  }
 
-  /** This function is called periodically during test mode. */
-  @Override
-  public void testPeriodic() {}
+  public void getDistance() {
+    //Avg x dist, avg y
+  }
 
-  /** This function is called once when the robot is first started up. */
-  @Override
-  public void simulationInit() {}
-
-  /** This function is called periodically whilst in simulation. */
-  @Override
-  public void simulationPeriodic() {}
 }
