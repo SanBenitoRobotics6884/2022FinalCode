@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -11,10 +13,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Robot extends TimedRobot {
   static final double uprMtrSpd = 0.7;
-  static final double lwrMtrSpd = 0.3;
+  static final double lwrMtrSpd = -0.3;
   Joystick m_joystick = new Joystick(0);
-  WPI_TalonSRX m_upperMotor = new WPI_TalonSRX(5);
-  WPI_TalonSRX m_lowerMotor = new WPI_TalonSRX(6);
+  VictorSPX m_upperMotor = new VictorSPX(4);
+  VictorSPX m_lowerMotor = new VictorSPX(5);
   
  
   @Override
@@ -47,14 +49,14 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     if (m_joystick.getRawButton(2)) {
-      m_lowerMotor.set(lwrMtrSpd);
+      m_lowerMotor.set(ControlMode.PercentOutput, lwrMtrSpd);
     } else {
-      m_lowerMotor.set(0);
+      m_lowerMotor.set(ControlMode.PercentOutput, 0);
     }
     if (m_joystick.getTrigger()) {
-      m_upperMotor.set(uprMtrSpd);
+      m_upperMotor.set(ControlMode.PercentOutput, uprMtrSpd);
     } else {
-      m_upperMotor.set(0);
+      m_upperMotor.set(ControlMode.PercentOutput, 0);
     }
   }
 
