@@ -23,7 +23,7 @@ public class Robot extends TimedRobot {
   CANSparkMax m_rightFront = new CANSparkMax(2, MotorType.kBrushless);
   CANSparkMax m_leftBack = new CANSparkMax(3, MotorType.kBrushless);
   CANSparkMax m_rightBack = new CANSparkMax(4, MotorType.kBrushless);
-  MecanumDrive m_Drive = new MecanumDrive(m_leftFront, m_rightFront, m_leftBack, m_rightBack);
+  MecanumDrive m_Drive = new MecanumDrive(m_leftFront, m_leftBack, m_rightFront, m_rightBack);
 
   /**
    * This function is run when the robot is first started up and should be used for any
