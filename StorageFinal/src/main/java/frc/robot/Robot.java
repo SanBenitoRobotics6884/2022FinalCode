@@ -5,19 +5,22 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends TimedRobot {
-  static final double uprMtrSpd = 0.7;
-  static final double lwrMtrSpd = -0.3;
+  static final double uprMtrSpd = 1.0;
+  static final double lwrMtrSpd = -0.5;
+  static final double kDelay = 1;
   Joystick m_joystick = new Joystick(0);
-  VictorSPX m_upperMotor = new VictorSPX(4);
-  VictorSPX m_lowerMotor = new VictorSPX(5);
-  
+  WPI_VictorSPX m_upperMotor = new WPI_VictorSPX(4);
+  WPI_VictorSPX m_lowerMotor = new WPI_VictorSPX(5);
+
+  private boolean prevTrigger = false;
+  private double targetTime = 0;
  
   @Override
   public void robotInit() {
@@ -55,9 +58,16 @@ public class Robot extends TimedRobot {
     }
     if (m_joystick.getTrigger()) {
       m_upperMotor.set(ControlMode.PercentOutput, uprMtrSpd);
+      if (! prevTrigger){
+        targetTime = Timer.getFPGATimestamp()+kDelay;
+      }
+      if (Timer.getFPGATimestamp() > targetTime){
+        m_lowerMotor.set(ControlMode.PercentOutput, lwrMtrSpd);
+      } else m_lowerMotor.set(ControlMode.PercentOutput, 0);
     } else {
       m_upperMotor.set(ControlMode.PercentOutput, 0);
     }
+    prevTrigger = m_joystick.getTrigger();
   }
 
   /** This function is called once when the robot is disabled. */
