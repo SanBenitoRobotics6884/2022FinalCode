@@ -9,6 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -31,75 +32,78 @@ public class Robot extends TimedRobot {
   private static final double maxAcc = 1500;
   private static final double allowedErr = 0;
 
-  private static final boolean isPid = true; //Run in PID mode instead of direct control (open loop)
+  private static final boolean isPid = false; //Run in PID mode instead of direct control (open loop)
   private static final boolean isDynamicKF = false; //EXPERIMENTAL. USE WITH CAUTION
   private static final double kLowSetpoint = 0; //Units: motor rotations
   private static final double kHighSetpoint = 20; //Units: motor rotations
-  private static final double kMaxVoltage = 4;
+  private static final double kMaxVoltage = -4; //CHANGE BACK TO 4
   private static final double kRatchetDeploy = 1;
   private static final double kRatchetRetract = -1;
-  private static final double kRatchetDelay = 1;
+  private static final double kRatchetDelay = 3;
 
   private static final int smartMotionSlot = 0;
-  private static final int kLeftLiftID = 4;
-  private static final int kRightLiftID = 5;
+  private static final int kLeftLiftID = 8;
+  private static final int kRightLiftID = 9;
   private static final int kJoystickPort = 0;
   private static final int kLeftServoPort = 0;
   private static final int kRightServoPort = 1;
 
-  private CANSparkMax m_leftLift = new CANSparkMax(kLeftLiftID, MotorType.kBrushless);
-  private CANSparkMax m_rightLift = new CANSparkMax(kRightLiftID, MotorType.kBrushless);
-  private SparkMaxPIDController m_leftPid;
-  private SparkMaxPIDController m_rightPid;
-  private RelativeEncoder m_leftEncoder;
-  private RelativeEncoder m_rightEncoder;
+  private CANSparkMax m_leftLiftMtr = new CANSparkMax(kLeftLiftID, MotorType.kBrushless);
+  private CANSparkMax m_rightLiftMtr = new CANSparkMax(kRightLiftID, MotorType.kBrushless);
+  private SparkMaxPIDController m_leftLiftPid;
+  private SparkMaxPIDController m_rightLiftPid;
+  private RelativeEncoder m_leftLiftEncoder;
+  private RelativeEncoder m_rightLiftEncoder;
 
   private Joystick m_joystick = new Joystick(kJoystickPort);
 
   private Servo m_leftAcuator = new Servo(kLeftServoPort);
   private Servo m_rightAcuator = new Servo(kRightServoPort);
 
-  private double targetTime = 0;
+  DigitalInput m_leftLimit = new DigitalInput(8);
+  DigitalInput m_rightLimit = new DigitalInput(9);
+
+  private double targetLiftTime = 0;
   private double prevLiftSpeed = 0;
   private boolean prevRatchet = true;
   private int closedLoopMode = 0; // 1: High, 0: Low
 
   @Override
   public void robotInit() {
-    m_leftLift.restoreFactoryDefaults();
-    m_rightLift.restoreFactoryDefaults();
+    m_leftLiftMtr.restoreFactoryDefaults();
+    m_rightLiftMtr.restoreFactoryDefaults();
 
-    m_leftLift.setInverted(false);
-    m_rightLift.setInverted(true);
+    m_leftLiftMtr.setInverted(true);
+    m_rightLiftMtr.setInverted(false);
 
     m_leftAcuator.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
     m_rightAcuator.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
 
-    m_rightEncoder = m_rightLift.getEncoder();
-    m_rightPid = m_rightLift.getPIDController();
-    m_rightPid.setP(kP);
-    m_rightPid.setI(kI);
-    m_rightPid.setD(kD);
-    m_rightPid.setIZone(0);
-    m_rightPid.setFF(kFUnloaded);
-    m_rightPid.setOutputRange(kMinOutput, kMaxOutput);
+    m_rightLiftEncoder = m_rightLiftMtr.getEncoder();
+    m_rightLiftPid = m_rightLiftMtr.getPIDController();
+    m_rightLiftPid.setP(kP);
+    m_rightLiftPid.setI(kI);
+    m_rightLiftPid.setD(kD);
+    m_rightLiftPid.setIZone(0);
+    m_rightLiftPid.setFF(kFUnloaded);
+    m_rightLiftPid.setOutputRange(kMinOutput, kMaxOutput);
 
-    m_rightPid.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
-    m_rightPid.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
-    m_rightPid.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+    m_rightLiftPid.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+    m_rightLiftPid.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+    m_rightLiftPid.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
 
-    m_leftEncoder = m_leftLift.getEncoder();
-    m_leftPid = m_leftLift.getPIDController();
-    m_leftPid.setP(kP);
-    m_leftPid.setI(kI);
-    m_leftPid.setD(kD);
-    m_leftPid.setIZone(0);
-    m_leftPid.setFF(kFUnloaded);
-    m_leftPid.setOutputRange(kMinOutput, kMaxOutput);
+    m_leftLiftEncoder = m_leftLiftMtr.getEncoder();
+    m_leftLiftPid = m_leftLiftMtr.getPIDController();
+    m_leftLiftPid.setP(kP);
+    m_leftLiftPid.setI(kI);
+    m_leftLiftPid.setD(kD);
+    m_leftLiftPid.setIZone(0);
+    m_leftLiftPid.setFF(kFUnloaded);
+    m_leftLiftPid.setOutputRange(kMinOutput, kMaxOutput);
 
-    m_leftPid.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
-    m_leftPid.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
-    m_leftPid.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+    m_leftLiftPid.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+    m_leftLiftPid.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+    m_leftLiftPid.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
 
     //Deploy ratchets at match start
     m_leftAcuator.setSpeed(kRatchetDeploy);
@@ -109,8 +113,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Left Position", m_leftEncoder.getPosition());
-    SmartDashboard.putNumber("Right Position", m_rightEncoder.getPosition());
+    SmartDashboard.putNumber("Left Position", m_leftLiftEncoder.getPosition());
+    SmartDashboard.putNumber("Right Position", m_rightLiftEncoder.getPosition());
+    SmartDashboard.putBoolean("Right LS", m_rightLimit.get());
+    SmartDashboard.putBoolean("Left LS", m_leftLimit.get());
+
+    if (!m_leftLimit.get()) {
+      m_leftLiftEncoder.setPosition(0);
+    }
+    if (!m_rightLimit.get()) {
+      m_rightLiftEncoder.setPosition(0);
+    }
   }
 
 
@@ -135,8 +148,8 @@ public class Robot extends TimedRobot {
       if (m_joystick.getTrigger()) {
         closedLoopLift();
       } else {
-        m_leftLift.setVoltage(0);
-        m_rightLift.setVoltage(0);
+        m_leftLiftMtr.setVoltage(0);
+        m_rightLiftMtr.setVoltage(0);
       }
     } else {
       openLoopLift(m_joystick.getY());
@@ -158,7 +171,15 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    if (m_joystick.getRawButton(3)) {
+      m_leftAcuator.setSpeed(m_joystick.getY());
+      SmartDashboard.putNumber("Left Retract", m_joystick.getY());
+    } else if (m_joystick.getRawButton(4)) {
+      m_rightAcuator.setSpeed(m_joystick.getY());
+      SmartDashboard.putNumber("Right Retract", m_joystick.getY());
+    }
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
@@ -174,12 +195,23 @@ public class Robot extends TimedRobot {
       speed = 0;
     }
 
+    SmartDashboard.putNumber("Speed", speed * kMaxVoltage);
+
     if (speed <= 0) { //Retracting Lift
       m_leftAcuator.setSpeed(kRatchetDeploy);
       m_rightAcuator.setSpeed(kRatchetDeploy);
 
-      m_leftLift.setVoltage(speed * kMaxVoltage);
-      m_rightLift.setVoltage(speed * kMaxVoltage);
+      if (!m_joystick.getRawButton(4) && m_leftLimit.get()) {
+        m_leftLiftMtr.setVoltage(speed * kMaxVoltage);
+      } else {
+        m_leftLiftMtr.setVoltage(0);
+      }
+      if (!m_joystick.getRawButton(3) && m_rightLimit.get()) {
+        m_rightLiftMtr.setVoltage(speed * kMaxVoltage);
+      } else {
+        m_rightLiftMtr.setVoltage(0);
+      }
+
     } else { //Raising Lift
       //Ratchets must be fully retracted to raise lift arms
       m_leftAcuator.setSpeed(kRatchetRetract);
@@ -187,14 +219,22 @@ public class Robot extends TimedRobot {
 
       //Allow arms to move after 1 second has passed
       if (prevLiftSpeed <= 0) {
-        targetTime = Timer.getFPGATimestamp() + kRatchetDelay;
+        targetLiftTime = Timer.getFPGATimestamp() + kRatchetDelay;
       }
-      if (Timer.getFPGATimestamp() >= targetTime) {
-        m_leftLift.setVoltage(speed * kMaxVoltage);
-        m_rightLift.setVoltage(speed * kMaxVoltage);
+      if (Timer.getFPGATimestamp() >= targetLiftTime) {
+        if (!m_joystick.getRawButton(4)) {
+          m_leftLiftMtr.setVoltage(speed * kMaxVoltage);
+        } else {
+          m_leftLiftMtr.setVoltage(0);
+        }
+        if (!m_joystick.getRawButton(3)) {
+          m_rightLiftMtr.setVoltage(speed * kMaxVoltage);
+        } else {
+          m_rightLiftMtr.setVoltage(0);
+        }
       } else {
-        m_leftLift.setVoltage(0);
-        m_rightLift.setVoltage(0);
+        m_leftLiftMtr.setVoltage(0);
+        m_rightLiftMtr.setVoltage(0);
       }
 
     }
@@ -217,13 +257,13 @@ public class Robot extends TimedRobot {
       //If dynamic kF enabled, use higher FF gain to counteract
       //weight of robot while lifting
       if (prevRatchet == false && isDynamicKF) {
-        m_leftPid.setFF(kFLoaded);
-        m_rightPid.setFF(kFLoaded);
+        m_leftLiftPid.setFF(kFLoaded);
+        m_rightLiftPid.setFF(kFLoaded);
       }
 
       //Set target position to retract and deploy ratchet
-      m_leftPid.setReference(kLowSetpoint, CANSparkMax.ControlType.kSmartMotion);
-      m_rightPid.setReference(kLowSetpoint, CANSparkMax.ControlType.kSmartMotion);
+      m_leftLiftPid.setReference(kLowSetpoint, CANSparkMax.ControlType.kSmartMotion);
+      m_rightLiftPid.setReference(kLowSetpoint, CANSparkMax.ControlType.kSmartMotion);
       m_leftAcuator.setSpeed(kRatchetDeploy);
       m_rightAcuator.setSpeed(kRatchetDeploy);
       prevRatchet = true;
@@ -233,8 +273,8 @@ public class Robot extends TimedRobot {
     if (closedLoopMode == 1) { //Extending
       //Use default FF gain when lifting (no weight to account for)
       if (prevRatchet == true && isDynamicKF) {
-        m_leftPid.setFF(kFUnloaded);
-        m_rightPid.setFF(kFUnloaded);
+        m_leftLiftPid.setFF(kFUnloaded);
+        m_rightLiftPid.setFF(kFUnloaded);
       }
 
       m_leftAcuator.setSpeed(kRatchetRetract);
@@ -242,15 +282,15 @@ public class Robot extends TimedRobot {
 
       //Delay 1 second so ratchets can fully deploy
       if (prevRatchet == true) {
-        targetTime = Timer.getFPGATimestamp() + kRatchetDelay;
+        targetLiftTime = Timer.getFPGATimestamp() + kRatchetDelay;
       }
-      if (Timer.getFPGATimestamp() >= targetTime) {
-        m_leftPid.setReference(kHighSetpoint, CANSparkMax.ControlType.kSmartMotion);
-        m_rightPid.setReference(kHighSetpoint, CANSparkMax.ControlType.kSmartMotion);
+      if (Timer.getFPGATimestamp() >= targetLiftTime) {
+        m_leftLiftPid.setReference(kHighSetpoint, CANSparkMax.ControlType.kSmartMotion);
+        m_rightLiftPid.setReference(kHighSetpoint, CANSparkMax.ControlType.kSmartMotion);
         System.out.println("Run");
       } else {
-        m_leftLift.setVoltage(0);
-        m_rightLift.setVoltage(0);
+        m_leftLiftMtr.setVoltage(0);
+        m_rightLiftMtr.setVoltage(0);
       }
       prevRatchet = false;
     }
