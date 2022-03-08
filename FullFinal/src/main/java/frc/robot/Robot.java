@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
   private static final double kRumbleStrength = 1;
   private static final double kAccelerationRumbleThreshold = 8.5;
   private static final double kCurrentRatioRumbleThreshold = 3;
-  private static final int kDrivePowerChannels[] = {0,1,14,15};
+  private static final int kDrivePowerChannels[] = {4,7,16,19};
 
   private boolean isEvac = false;
   private boolean isLaunching = false;
