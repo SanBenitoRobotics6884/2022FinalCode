@@ -33,10 +33,10 @@ public class DriveSubsystem extends SubsystemBase {
   private MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
   private Pose2d m_pose = new Pose2d();
 
-  private CANSparkMax m_leftFront = new CANSparkMax(1, MotorType.kBrushless);
-  private CANSparkMax m_rightFront = new CANSparkMax(3, MotorType.kBrushless);
-  private CANSparkMax m_leftBack = new CANSparkMax(2, MotorType.kBrushless);
-  private CANSparkMax m_rightBack = new CANSparkMax(4, MotorType.kBrushless);
+  private CANSparkMax m_leftFront = new CANSparkMax(Constants.Drive.kLeftFrontMotor, MotorType.kBrushless);
+  private CANSparkMax m_rightFront = new CANSparkMax(Constants.Drive.kRightFrontMotor, MotorType.kBrushless);
+  private CANSparkMax m_leftBack = new CANSparkMax(Constants.Drive.kLeftBackMotor, MotorType.kBrushless);
+  private CANSparkMax m_rightBack = new CANSparkMax(Constants.Drive.kRightBackMotor, MotorType.kBrushless);
 
   private RelativeEncoder m_frontLeftEncoder;
   private RelativeEncoder m_frontRightEncoder;
