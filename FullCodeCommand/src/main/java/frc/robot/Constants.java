@@ -4,10 +4,6 @@
 
 package frc.robot;
 
-import java.security.KeyPair;
-
-import edu.wpi.first.math.geometry.Translation2d;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -37,5 +33,16 @@ public final class Constants {
         public static final double kdrivedeadband = 0.1;
         public static final double kMaxTurn = 360;
 
+    }
+
+    public final class Cargo {
+        public static final double kLwrStorageDelay = 3;
+        public static final double intkVltge = 6;
+        public static final double uprMtrSpd = 0.75;
+        public static final double lwrMtrSpd = 0.6;
+
+        public static final int kIntakeID = 6;
+        public static final int kLowerStorageID = 5;
+        public static final int kUpperStorageID = 7;
     }
 }
