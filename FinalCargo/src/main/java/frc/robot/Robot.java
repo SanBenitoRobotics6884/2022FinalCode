@@ -5,13 +5,13 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.CameraServerCvJNI;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,44 +25,57 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
-  private boolean isEvac = false;
-  private boolean isLaunching = false;
-  private boolean isIntaking = false;
-  private boolean prevTrigger = false;
-  private double lwrStorageTargetTime = 0;
-  private double turnPID = 0;
-
-Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
-Translation2d m_frontRightLocation = new Translation2d(0.254, -0.254);
-Translation2d m_backLeftLocation = new Translation2d(-0.254, 0.254);
-Translation2d m_backRightLocation = new Translation2d(-0.254, -0.254);
-
-// Creating my kinematics object using the wheel locations.
-MecanumDriveKinematics m_kinematics = new MecanumDriveKinematics(
-  m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
-MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
-Pose2d m_pose = new Pose2d();
   
-  private static final double kLwrStorageDelay = 1;
+  Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
+  Translation2d m_frontRightLocation = new Translation2d(0.254, -0.254);
+  Translation2d m_backLeftLocation = new Translation2d(-0.254, 0.254);
+  Translation2d m_backRightLocation = new Translation2d(-0.254, -0.254);
+
+  // Creating my kinematics object using the wheel locations.
+  MecanumDriveKinematics m_kinematics = new MecanumDriveKinematics(
+    m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+  MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
+  Pose2d m_pose = new Pose2d();
+
+  private static final double kSlowspd = 0.4;
+  private static final double kFastSpd = 0.8;
+  private static final double kLwrStorageDelay = 3;
   private static final double kDriveGearing = 10.71;
   private static final double kWheelCircummference = 6 * Math.PI;
-  private static final double intkVltge = 4;
-  private static final double uprMtrSpd = 1;
+  private static final double intkVltge = 6;
+  private static final double uprMtrSpd = 0.75;
   private static final double lwrMtrSpd = 0.6;
-  private static final double kMaxDriveSpd = 0.75;
   private static final double kdrivedeadband = 0.1;
   private static final double kMaxTurn = 360;
   private static final double kP = 0.008;
   private static final double kD = 0.00005;
   private static final double kF = 0.1;
 
+  //Rumble constants
+  private static final double kRumblePulseWidth = 0.3; // Duration of rumble pulse
+  private static final double kRumblePulseRate = 3;
+  private static final double kRumbleStrength = 1;
+  private static final double kAccelerationRumbleThreshold = 8.5;
+  private static final double kCurrentRatioRumbleThreshold = 3;
+  private static final int kDrivePowerChannels[] = {0,1,14,15};
+
+  private boolean isEvac = false;
+  private boolean isLaunching = false;
+  private boolean isIntaking = false;
+  private boolean prevTrigger = false;
+  private double lwrStorageTargetTime = 0;
+  private double turnPID = 0;
+  private double maxDriveSpdScalar = 0.75;
+  private double netAccelertion = 0;
 
   private Joystick m_joystick = new Joystick(0);
-  private Joystick m_controller = new Joystick(1);
+  private XboxController m_controller = new XboxController(1);
 
   private WPI_VictorSPX m_uprStorageMtr = new WPI_VictorSPX(7);
   private WPI_VictorSPX m_lwrStorageMtr = new WPI_VictorSPX(5);
@@ -95,9 +108,9 @@ Pose2d m_pose = new Pose2d();
  
   @Override
   public void robotInit() {
-   m_lwrStorageMtr.configFactoryDefault();
-   m_uprStorageMtr.configFactoryDefault();
-   m_leftBack.restoreFactoryDefaults();
+    m_lwrStorageMtr.configFactoryDefault();
+    m_uprStorageMtr.configFactoryDefault();
+    m_leftBack.restoreFactoryDefaults();
     m_leftFront.restoreFactoryDefaults();
     m_rightBack.restoreFactoryDefaults();
     m_rightFront.restoreFactoryDefaults();
@@ -121,6 +134,7 @@ Pose2d m_pose = new Pose2d();
     m_rightBack.setInverted(true);
     m_rightFront.setInverted(true);
     m_lwrStorageMtr.setInverted(true);
+    m_uprStorageMtr.setNeutralMode(NeutralMode.Coast);
 
     m_gyro.calibrate();
     m_gyro.setYawAxis(ADIS16470_IMU.IMUAxis.kY);
@@ -134,6 +148,13 @@ Pose2d m_pose = new Pose2d();
 
   @Override
   public void robotPeriodic() {
+    if (m_controller.getLeftBumper()) {
+      maxDriveSpdScalar = kSlowspd;
+   }
+   if (m_controller.getRightBumper()) {
+      maxDriveSpdScalar = kFastSpd;
+   }
+
     if (m_joystick.getTrigger()) {
       isLaunching = true;
     } else {
@@ -150,6 +171,55 @@ Pose2d m_pose = new Pose2d();
       isEvac = false;
     }
     
+    // Calculate net acceleration (all directions) and subtract acc due to gravity
+    netAccelertion = Math.sqrt(Math.pow(m_gyro.getAccelX(), 2) +
+      Math.pow(m_gyro.getAccelY(), 2) + Math.pow(m_gyro.getAccelZ(), 2))-9.8;
+    netAccelertion = Math.abs(netAccelertion);
+
+    // Deadband net acceleration for random fluctuations
+    if (netAccelertion < 0.05){
+      netAccelertion = 0; 
+    }
+
+    // Calculate avg current from drive motors only
+    double avgDriveCurrent = ( m_pdh.getCurrent(kDrivePowerChannels[0]) +
+                          m_pdh.getCurrent(kDrivePowerChannels[1]) +
+                          m_pdh.getCurrent(kDrivePowerChannels[2]) +
+                          m_pdh.getCurrent(kDrivePowerChannels[3])
+                        ) / 4;
+    double currentRatio = (avgDriveCurrent / netAccelertion);
+
+    // Pulse if robot is pushing against obstacle or other robot
+    boolean isPulsing;
+    if (currentRatio > kCurrentRatioRumbleThreshold) {
+      isPulsing = true;
+    } else {
+      isPulsing = false;
+    }
+
+    //If pulsing, alternate between full rumble and no rumble
+    if (isPulsing) {
+      double pulseTime = (Timer.getFPGATimestamp() * kRumblePulseRate) % 1;
+
+      if (pulseTime < kRumblePulseWidth) {
+        m_controller.setRumble(RumbleType.kLeftRumble, kRumbleStrength);
+        m_controller.setRumble(RumbleType.kRightRumble, kRumbleStrength);
+      } else {
+        m_controller.setRumble(RumbleType.kLeftRumble, -kRumbleStrength);
+        m_controller.setRumble(RumbleType.kRightRumble, -kRumbleStrength);
+      }
+    //Otherwise rumble when past the acceleration threshold
+    } else {
+      if (netAccelertion > kAccelerationRumbleThreshold) {
+        m_controller.setRumble(RumbleType.kLeftRumble, kRumbleStrength);
+        m_controller.setRumble(RumbleType.kRightRumble, kRumbleStrength);
+      } else {
+        m_controller.setRumble(RumbleType.kLeftRumble, 0);
+        m_controller.setRumble(RumbleType.kRightRumble, 0);
+      }
+    }
+
+    SmartDashboard.putNumber("Acceleration", netAccelertion);
 
     SmartDashboard.putData("Gyro", m_gyro);
     SmartDashboard.putData("drive", m_drive);
@@ -157,19 +227,17 @@ Pose2d m_pose = new Pose2d();
     SmartDashboard.putNumber("pose Y", m_pose.getY());
     SmartDashboard.putNumber("PID Out", turnPID);
 
-    double avgDriveCurrent = (m_pdh.getCurrent(0) + m_pdh.getCurrent(0) + m_pdh.getCurrent(0) + m_pdh.getCurrent(0)) / 4;
-
-    var wheelSpeeds = new MecanumDriveWheelSpeeds(
+    MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds(
       Units.inchesToMeters(m_frontLeftEncoder.getVelocity()), Units.inchesToMeters(m_frontRightEncoder.getVelocity()),
       Units.inchesToMeters(m_backLeftEncoder.getVelocity()), Units.inchesToMeters(m_backRightEncoder.getVelocity()));
 
-  // Get my gyro angle. We are negating the value because gyros return positive
-  // values as the robot turns clockwise. This is not standard convention that is
-  // used by the WPILib classes.
-  var gyroAngle = Rotation2d.fromDegrees(-m_gyro.getAngle());
+    // Get my gyro angle. We are negating the value because gyros return positive
+    // values as the robot turns clockwise. This is not standard convention that is
+    // used by the WPILib classes.
+    Rotation2d gyroAngle = Rotation2d.fromDegrees(-m_gyro.getAngle());
 
-  // Update the pose
-  m_pose = m_odometry.update(gyroAngle, wheelSpeeds);
+    // Update the pose
+    m_pose = m_odometry.update(gyroAngle, wheelSpeeds);
   }
 
   @Override
@@ -191,17 +259,17 @@ Pose2d m_pose = new Pose2d();
   @Override
   public void teleopPeriodic() {
 
-    double yspeed = -m_controller.getRawAxis(1) * Math.abs(m_controller.getRawAxis(1));
-    double xspeed = m_controller.getRawAxis(0) * Math.abs(m_controller.getRawAxis(0));
-    double zrot = m_controller.getRawAxis(2) * Math.abs(m_controller.getRawAxis(2));
+    double yspeed = -m_controller.getLeftY() * Math.abs(m_controller.getLeftY());
+    double xspeed = m_controller.getLeftX() * Math.abs(m_controller.getLeftX());
+    double zrot = m_controller.getRightX() * Math.abs(m_controller.getRightX());
 
     if (Math.abs(yspeed) < kdrivedeadband) yspeed = 0;
     if (Math.abs(xspeed) < kdrivedeadband) xspeed = 0;
     if (Math.abs(zrot) < kdrivedeadband) zrot = 0;
 
-    yspeed *= kMaxDriveSpd;
-    xspeed *= kMaxDriveSpd;
-    zrot *= kMaxDriveSpd;
+    yspeed *= maxDriveSpdScalar;
+    xspeed *= maxDriveSpdScalar;
+    zrot *= maxDriveSpdScalar;
 
     turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * kMaxTurn);
     if (turnPID > 0) {
@@ -218,12 +286,6 @@ Pose2d m_pose = new Pose2d();
 
     } else if (mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
 
-    }
-
-    if(!isEvac) {
-      m_intakeMotor.setVoltage(0);
-      m_lwrStorageMtr.set(0);
-      m_uprStorageMtr.set(0);
     }
 
     if (isIntaking) {
