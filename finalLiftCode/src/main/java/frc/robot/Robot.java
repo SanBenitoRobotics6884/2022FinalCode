@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
   private static final double kMaxVoltageLeft = -4; //CHANGE BACK TO 4
   private static final double kMaxVoltageRight = -4.5; //CHANGE BACK TO 4
   private static final double kRatchetDeploy = 1;
-  private static final double kRatchetRetract = -0.35;
+  private static final double kRatchetRetract = -0.4;
   private static final double kRatchetDelay = 3;
 
   private static final int smartMotionSlot = 0;
