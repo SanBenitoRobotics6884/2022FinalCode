@@ -37,9 +37,9 @@ public final class Constants {
 
     public final class Cargo {
         public static final double kLwrStorageDelay = 3;
-        public static final double intkVltge = 6;
-        public static final double uprMtrSpd = 0.75;
-        public static final double lwrMtrSpd = 0.6;
+        public static final double kIntkVltge = 6;
+        public static final double kLaunchSpd = 0.75;
+        public static final double kLwrMtrSpd = 0.6;
 
         public static final int kIntakeID = 6;
         public static final int kLowerStorageID = 5;
@@ -47,16 +47,18 @@ public final class Constants {
     }
 
     public final class Lift {
-        public static final double kPlift = 0.00015;
-        public static final double kIlift = 0;
-        public static final double kDlift = 0;
-        public static final double kFUnloadedLift = 0;
-        public static final double kFLoadedLift = 0.0004;
-        public static final double kMinOutputLift = -1;
-        public static final double kMaxOutputLift = 1;
-        public static final double kMaxVelLift = 2000; // rpm
-        public static final double kMaxAccLift = 1500;
-        public static final double kAllowedErrLift = 0;
+        public final class LiftPID {
+            public static final double kPlift = 0.00015;
+            public static final double kIlift = 0;
+            public static final double kDlift = 0;
+            public static final double kFUnloadedLift = 0;
+            public static final double kFLoadedLift = 0.0004;
+            public static final double kMinOutputLift = -1;
+            public static final double kMaxOutputLift = 1;
+            public static final double kMaxVelLift = 2000; // rpm
+            public static final double kMaxAccLift = 1500;
+            public static final double kAllowedErrLift = 0;
+        }
 
         public static final boolean isPid = false; //Run in PID mode instead of direct control (open loop)
         public static final boolean isDynamicKF = false; //EXPERIMENTAL. USE WITH CAUTION
