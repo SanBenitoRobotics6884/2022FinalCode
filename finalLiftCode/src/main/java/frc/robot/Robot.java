@@ -7,6 +7,7 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -37,17 +38,19 @@ public class Robot extends TimedRobot {
   private static final double kLowSetpoint = 0; //Units: motor rotations
   private static final double kHighSetpoint = 20; //Units: motor rotations
   private static final double kMaxVoltageLeft = -4; //CHANGE BACK TO 4
-  private static final double kMaxVoltageRight = -4.5; //CHANGE BACK TO 4
-  private static final double kRatchetDeploy = 1;
-  private static final double kRatchetRetract = -0.4;
+  private static final double kMaxVoltageRight = -4; //CHANGE BACK TO 4
+  private static final double kServoExtendLeft = -0.1;
+  private static final double kServoExtendRight = 0;
+  private static final double kServoRetractLeft = -0.55;
+  private static final double kServoRetractRight = -0.45;
   private static final double kRatchetDelay = 3;
 
   private static final int smartMotionSlot = 0;
   private static final int kLeftLiftID = 8;
   private static final int kRightLiftID = 9;
   private static final int kJoystickPort = 0;
-  private static final int kLeftServoPort = 0;
-  private static final int kRightServoPort = 1;
+  private static final int kLeftServoPort = 1;
+  private static final int kRightServoPort = 0;
 
   private CANSparkMax m_leftLiftMtr = new CANSparkMax(kLeftLiftID, MotorType.kBrushless);
   private CANSparkMax m_rightLiftMtr = new CANSparkMax(kRightLiftID, MotorType.kBrushless);
@@ -76,6 +79,9 @@ public class Robot extends TimedRobot {
 
     m_leftLiftMtr.setInverted(true);
     m_rightLiftMtr.setInverted(false);
+
+    m_leftLiftMtr.setIdleMode(IdleMode.kBrake);
+    m_rightLiftMtr.setIdleMode(IdleMode.kBrake);
 
     m_leftAcuator.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
     m_rightAcuator.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
@@ -107,8 +113,8 @@ public class Robot extends TimedRobot {
     m_leftLiftPid.setSmartMotionAllowedClosedLoopError(allowedErrLift, smartMotionSlot);
 
     //Deploy ratchets at match start
-    m_leftAcuator.setSpeed(kRatchetDeploy);
-    m_rightAcuator.setSpeed(kRatchetDeploy);
+    m_leftAcuator.setSpeed(kServoExtendLeft);
+    m_rightAcuator.setSpeed(kServoExtendRight);
   }
 
 
@@ -199,8 +205,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Speed", speed * kMaxVoltageLeft);
 
     if (speed <= 0) { //Retracting Lift
-      m_leftAcuator.setSpeed(kRatchetDeploy);
-      m_rightAcuator.setSpeed(kRatchetDeploy);
+      m_leftAcuator.setSpeed(kServoExtendLeft);
+      m_rightAcuator.setSpeed(kServoExtendRight);
 
       if (!m_joystick.getRawButton(4) && m_leftLimit.get()) {
         m_leftLiftMtr.setVoltage(speed * kMaxVoltageLeft);
@@ -215,8 +221,8 @@ public class Robot extends TimedRobot {
 
     } else { //Raising Lift
       //Ratchets must be fully retracted to raise lift arms
-      m_leftAcuator.setSpeed(kRatchetRetract);
-      m_rightAcuator.setSpeed(kRatchetRetract);
+      m_leftAcuator.setSpeed(kServoRetractLeft);
+      m_rightAcuator.setSpeed(kServoRetractRight);
 
       //Allow arms to move after 1 second has passed
       if (prevLiftSpeed <= 0) {
@@ -265,8 +271,8 @@ public class Robot extends TimedRobot {
       //Set target position to retract and deploy ratchet
       m_leftLiftPid.setReference(kLowSetpoint, CANSparkMax.ControlType.kSmartMotion);
       m_rightLiftPid.setReference(kLowSetpoint, CANSparkMax.ControlType.kSmartMotion);
-      m_leftAcuator.setSpeed(kRatchetDeploy);
-      m_rightAcuator.setSpeed(kRatchetDeploy);
+      m_leftAcuator.setSpeed(kServoExtendLeft);
+      m_rightAcuator.setSpeed(kServoExtendRight);
       prevRatchet = true;
     }
 
@@ -278,8 +284,8 @@ public class Robot extends TimedRobot {
         m_rightLiftPid.setFF(kFUnloadedLift);
       }
 
-      m_leftAcuator.setSpeed(kRatchetRetract);
-      m_rightAcuator.setSpeed(kRatchetRetract);
+      m_leftAcuator.setSpeed(kServoRetractLeft);
+      m_rightAcuator.setSpeed(kServoRetractRight);
 
       //Delay 1 second so ratchets can fully deploy
       if (prevRatchet == true) {
