@@ -68,6 +68,9 @@ public class RobotContainer {
     new JoystickButton(m_joystick, 4)
       .whenPressed(new InstantCommand(() -> m_lift.setRightArmStatus(true) ))
       .whenReleased(new InstantCommand(() -> m_lift.setRightArmStatus(false) ));
+
+    new JoystickButton(m_joystick, 12)
+      .whenPressed(new InstantCommand(() -> m_lift.disengageRatchets() ));
   }
 
 }

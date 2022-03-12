@@ -102,7 +102,7 @@ public class LiftSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Position", m_rightLiftEncoder.getPosition());
 
-    if (speed <= 0) { //Retracting Lift
+    if (speed < 0) { //Retracting Lift
       m_leftAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
       m_rightAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
 
@@ -117,28 +117,15 @@ public class LiftSubsystem extends SubsystemBase {
         m_rightLiftMtr.setVoltage(0);
       }
 
-    } else { //Raising Lift
-      //Ratchets must be fully retracted to raise lift arms
-      m_leftAcuator.setSpeed(Constants.Lift.kRatchetRetract);
-      m_rightAcuator.setSpeed(Constants.Lift.kRatchetRetract);
-
-      //Allow arms to move after 1 second has passed
-      if (prevLiftSpeed <= 0) {
-        targetLiftTime = Timer.getFPGATimestamp() + Constants.Lift.kRatchetDelay;
-      }
-      if (Timer.getFPGATimestamp() >= targetLiftTime) {
-        if (!isolateRightArm && m_leftLiftEncoder.getPosition() > Constants.Lift.kMaxHeight) {
-          m_leftLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageLeft);
-        } else {
-          m_leftLiftMtr.setVoltage(0);
-        }
-        if (!isolateLeftArm && m_rightLiftEncoder.getPosition() > Constants.Lift.kMaxHeight) {
-          m_rightLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageRight);
-        } else {
-          m_rightLiftMtr.setVoltage(0);
-        }
+    } else {
+      if (!isolateRightArm && m_leftLiftEncoder.getPosition() > Constants.Lift.kMaxHeight) {
+        m_leftLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageLeft);
       } else {
         m_leftLiftMtr.setVoltage(0);
+      }
+      if (!isolateLeftArm && m_rightLiftEncoder.getPosition() > Constants.Lift.kMaxHeight) {
+        m_rightLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageRight);
+      } else {
         m_rightLiftMtr.setVoltage(0);
       }
 
@@ -201,6 +188,11 @@ public class LiftSubsystem extends SubsystemBase {
 
   public void setClosedLoopMode(int mode) {
     closedLoopMode = mode;
+  }
+
+  public void disengageRatchets() {
+    m_leftAcuator.setSpeed(Constants.Lift.kRatchetRetract);
+    m_rightAcuator.setSpeed(Constants.Lift.kRatchetRetract);
   }
 
   public boolean getLeftArmStatus() {
