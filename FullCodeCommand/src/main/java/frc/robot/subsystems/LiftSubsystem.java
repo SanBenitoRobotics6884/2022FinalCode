@@ -43,8 +43,8 @@ public class LiftSubsystem extends SubsystemBase {
     m_leftLiftMtr.restoreFactoryDefaults();
     m_rightLiftMtr.restoreFactoryDefaults();
 
-    m_leftLiftMtr.setInverted(true);
-    m_rightLiftMtr.setInverted(false);
+    m_leftLiftMtr.setInverted(false);
+    m_rightLiftMtr.setInverted(true);
 
     m_leftLiftMtr.setIdleMode(IdleMode.kBrake);
     m_rightLiftMtr.setIdleMode(IdleMode.kBrake);

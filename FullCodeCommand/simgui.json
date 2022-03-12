@@ -1,27 +1,12 @@
 {
   "HALProvider": {
     "Other Devices": {
-      "SPARK MAX [6]": {
-        "header": {
-          "open": true
-        }
-      },
       "SPARK MAX [8]": {
         "header": {
           "open": true
         }
       },
       "SPARK MAX [9]": {
-        "header": {
-          "open": true
-        }
-      },
-      "Victor SPX[5]": {
-        "header": {
-          "open": true
-        }
-      },
-      "Victor SPX[7]": {
         "header": {
           "open": true
         }

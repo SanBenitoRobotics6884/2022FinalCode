@@ -64,8 +64,8 @@ public final class Constants {
         public static final boolean isDynamicKF = false; //EXPERIMENTAL. USE WITH CAUTION
         public static final double kLowSetpoint = 0; //Units: motor rotations
         public static final double kHighSetpoint = 20; //Units: motor rotations
-        public static final double kMaxVoltageLeft = -4;
-        public static final double kMaxVoltageRight = -4.5;
+        public static final double kMaxVoltageLeft = 4;
+        public static final double kMaxVoltageRight = 4.5;
         public static final double kRatchetDeploy = 0;
         public static final double kRatchetRetract = -0.5;
         public static final double kRatchetDelay = 3;
