@@ -30,6 +30,7 @@ public final class Constants {
             public static final double kF = 0.01;
             public static final double kMaxVelRot = 5;
             public static final double kMaxAccRot = 2.5;
+            public static final double kAllowedError = 0.5;
         }
 
         public final class PositionPID {
@@ -39,6 +40,7 @@ public final class Constants {
             public static final double kF = 0.01;
             public static final double kMaxVel = 5;
             public static final double kMaxAcc = 2.5;
+            public static final double kAllowedError = 0.5;
         }
 
         public static final Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
