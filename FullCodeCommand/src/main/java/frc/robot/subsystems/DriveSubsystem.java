@@ -9,27 +9,28 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class DriveSubsystem extends SubsystemBase {
 
-  private Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
-  private Translation2d m_frontRightLocation = new Translation2d(0.254, -0.254);
-  private Translation2d m_backLeftLocation = new Translation2d(-0.254, 0.254);
-  private Translation2d m_backRightLocation = new Translation2d(-0.254, -0.254);
-
   private MecanumDriveKinematics m_kinematics = new MecanumDriveKinematics(
-    m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+    Constants.Drive.m_frontLeftLocation,
+    Constants.Drive.m_frontRightLocation,
+    Constants.Drive.m_backLeftLocation,
+    Constants.Drive.m_backRightLocation);
+  
   private MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
   private Pose2d m_pose = new Pose2d();
 
@@ -45,9 +46,34 @@ public class DriveSubsystem extends SubsystemBase {
 
   private MecanumDrive m_drive = new MecanumDrive(m_leftFront, m_leftBack, m_rightFront, m_rightBack);
   private ADIS16470_IMU m_gyro;
-  private PIDController m_TurnPID = new PIDController(Constants.Drive.TurnRatePID.kP,
-                                                      Constants.Drive.TurnRatePID.kI, 
-                                                      Constants.Drive.TurnRatePID.kD);
+  private PIDController m_TurnPID = new PIDController
+    (Constants.Drive.TurnRatePID.kP,
+    Constants.Drive.TurnRatePID.kI, 
+    Constants.Drive.TurnRatePID.kD);
+
+  private TrapezoidProfile.Constraints m_positionConstraints
+    = new TrapezoidProfile.Constraints(Constants.Drive.PositionPID.kMaxVel, Constants.Drive.PositionPID.kMaxAcc);
+
+  private ProfiledPIDController m_positionControllerY = new ProfiledPIDController
+    (Constants.Drive.PositionPID.kP,
+    Constants.Drive.PositionPID.kI,
+    Constants.Drive.PositionPID.kD,
+    m_positionConstraints);
+
+  private ProfiledPIDController m_positionControllerX = new ProfiledPIDController
+    (Constants.Drive.PositionPID.kP,
+    Constants.Drive.PositionPID.kI,
+    Constants.Drive.PositionPID.kD,
+    m_positionConstraints);
+
+  private TrapezoidProfile.Constraints m_angleConstraints
+    = new TrapezoidProfile.Constraints(Constants.Drive.AbsoluteAnglePID.kMaxVelRot, Constants.Drive.AbsoluteAnglePID.kMaxAccRot);
+
+  private ProfiledPIDController m_positionControllerAngle = new ProfiledPIDController
+    (Constants.Drive.PositionPID.kP,
+    Constants.Drive.PositionPID.kI,
+    Constants.Drive.PositionPID.kD,
+    m_angleConstraints);
 
   private double turnPID = 0;
   private double maxDriveSpdScalar = Constants.Drive.kSlowSpd;
@@ -104,11 +130,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_pose = m_odometry.update(gyroAngle, wheelSpeeds);
 
-    /*
-    double yspeed = -inputProcess(m_controller.getLeftY(), kdrivedeadband, maxDriveSpdScalar);
-    double xspeed = inputProcess(m_controller.getLeftX(), kdrivedeadband, maxDriveSpdScalar);
-    double zrot = inputProcess(m_controller.getRightX(), kdrivedeadband, maxDriveSpdScalar);
-    */
+    SmartDashboard.putNumber("Pose X", m_pose.getX());
+    SmartDashboard.putNumber("Pose Y", m_pose.getY());
     
   }
 
@@ -131,8 +154,15 @@ public class DriveSubsystem extends SubsystemBase {
       } else if (turnPID < 0) {
         turnPID += Constants.Drive.TurnRatePID.kF;
       }
+      SmartDashboard.putNumber("Gyro Turn Assist", turnPID);
     } else if (mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
-      // gyro turn rate assist plus field centric mode
+      turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
+      if (turnPID > 0) {
+        turnPID -= Constants.Drive.TurnRatePID.kF;
+      } else if (turnPID < 0) {
+        turnPID += Constants.Drive.TurnRatePID.kF;
+      }
+      SmartDashboard.putNumber("Gyro Turn Assist", turnPID);
     }
   }
 
@@ -146,6 +176,37 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void setDriveMode(DriveMode driveMode) {
     mode = driveMode;
+  }
+
+  public void setPositionTarget(double xDist, double yDist, double zRot) {
+    m_positionControllerY.reset(0);
+    m_positionControllerX.reset(0);
+    m_positionControllerAngle.reset(0);
+
+    m_positionControllerY.setGoal(yDist);
+    m_positionControllerX.setGoal(xDist);
+    m_positionControllerAngle.setGoal(zRot);
+  }
+
+  public void driveTowardTarget() {
+    /*
+    m_drive.driveCartesian(
+      m_positionControllerY.calculate(m_pose.getY()),
+      m_positionControllerX.calculate(m_pose.getX()),
+      m_positionControllerAngle.calculate(m_gyro.getAngle()),
+      m_gyro.getAngle());
+    */
+    
+      SmartDashboard.putNumber("Controller Y", m_positionControllerY.calculate(m_pose.getY()));
+      SmartDashboard.putNumber("Controller X", m_positionControllerX.calculate(m_pose.getX()));
+      SmartDashboard.putNumber("Controller Rot", m_positionControllerAngle.calculate(m_gyro.getAngle()));
+  }
+
+  public boolean atTargetPosition() {
+    boolean atY = m_positionControllerY.getPositionError() < Constants.Drive.PositionPID.kAllowedError;
+    boolean atX = m_positionControllerX.getPositionError() < Constants.Drive.PositionPID.kAllowedError;
+    boolean atZ = m_positionControllerAngle.getPositionError() < Constants.Drive.AbsoluteAnglePID.kAllowedError;
+    return atY && atX && atZ;
   }
 
   public DriveMode getDriveMode() {

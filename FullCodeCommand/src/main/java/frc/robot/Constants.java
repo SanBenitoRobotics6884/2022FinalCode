@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -13,13 +15,36 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public final class Drive {
+    public static final class Drive {
         public final class TurnRatePID {
             public static final double kP = 0.008;
             public static final double kI = 0;
             public static final double kD = 0.00005;
             public static final double kF = 0.01;
         }
+
+        public final class AbsoluteAnglePID {
+            public static final double kP = 0.008;
+            public static final double kI = 0;
+            public static final double kD = 0.00005;
+            public static final double kF = 0.01;
+            public static final double kMaxVelRot = 5;
+            public static final double kMaxAccRot = 2.5;
+        }
+
+        public final class PositionPID {
+            public static final double kP = 0.008;
+            public static final double kI = 0;
+            public static final double kD = 0.00005;
+            public static final double kF = 0.01;
+            public static final double kMaxVel = 5;
+            public static final double kMaxAcc = 2.5;
+        }
+
+        public static final Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
+        public static final Translation2d m_frontRightLocation = new Translation2d(0.254, -0.254);
+        public static final Translation2d m_backLeftLocation = new Translation2d(-0.254, 0.254);
+        public static final Translation2d m_backRightLocation = new Translation2d(-0.254, -0.254);
 
         public static final int kLeftFrontMotor = 1;
         public static final int kRightFrontMotor = 3;
@@ -35,7 +60,7 @@ public final class Constants {
 
     }
 
-    public final class Cargo {
+    public static final class Cargo {
         public static final double kLwrStorageDelay = 3;
         public static final double kIntkVltge = 6;
         public static final double kLaunchSpd = 0.75;
@@ -46,7 +71,7 @@ public final class Constants {
         public static final int kUpperStorageID = 7;
     }
 
-    public final class Lift {
+    public static final class Lift {
         public final class LiftPID {
             public static final double kPlift = 0.00015;
             public static final double kIlift = 0;
