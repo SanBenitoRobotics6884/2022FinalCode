@@ -50,7 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
                                                       Constants.Drive.TurnRatePID.kD);
 
   private double turnPID = 0;
-  private double maxDriveSpdScalar = Constants.Drive.kSlowspd;
+  private double maxDriveSpdScalar = Constants.Drive.kSlowSpd;
 
   public enum DriveMode{
     DEFAULT,

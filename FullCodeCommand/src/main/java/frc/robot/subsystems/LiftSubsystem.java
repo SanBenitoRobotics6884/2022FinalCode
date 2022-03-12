@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -44,6 +45,9 @@ public class LiftSubsystem extends SubsystemBase {
 
     m_leftLiftMtr.setInverted(true);
     m_rightLiftMtr.setInverted(false);
+
+    m_leftLiftMtr.setIdleMode(IdleMode.kBrake);
+    m_rightLiftMtr.setIdleMode(IdleMode.kBrake);
 
     m_leftAcuator.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
     m_rightAcuator.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
@@ -96,7 +100,7 @@ public class LiftSubsystem extends SubsystemBase {
       speed = 0;
     }
 
-    SmartDashboard.putNumber("Speed", speed * Constants.Lift.kMaxVoltageLeft);
+    SmartDashboard.putNumber("Position", m_rightLiftEncoder.getPosition());
 
     if (speed <= 0) { //Retracting Lift
       m_leftAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
@@ -123,12 +127,12 @@ public class LiftSubsystem extends SubsystemBase {
         targetLiftTime = Timer.getFPGATimestamp() + Constants.Lift.kRatchetDelay;
       }
       if (Timer.getFPGATimestamp() >= targetLiftTime) {
-        if (!isolateRightArm) {
+        if (!isolateRightArm && m_leftLiftEncoder.getPosition() > Constants.Lift.kMaxHeight) {
           m_leftLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageLeft);
         } else {
           m_leftLiftMtr.setVoltage(0);
         }
-        if (!isolateLeftArm) {
+        if (!isolateLeftArm && m_rightLiftEncoder.getPosition() > Constants.Lift.kMaxHeight) {
           m_rightLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageRight);
         } else {
           m_rightLiftMtr.setVoltage(0);
@@ -187,12 +191,12 @@ public class LiftSubsystem extends SubsystemBase {
       prevRatchet = false;
     }
   }
-  public void setLeftArmStatus(boolean isRunning) {
-    isolateLeftArm = isRunning;
+  public void setLeftArmStatus(boolean isIsolated) {
+    isolateLeftArm = isIsolated;
   }
 
-  public void setRightArmStatus(boolean isRunning) {
-    isolateRightArm = isRunning;
+  public void setRightArmStatus(boolean isIsolated) {
+    isolateRightArm = isIsolated;
   }
 
   public void setClosedLoopMode(int mode) {
