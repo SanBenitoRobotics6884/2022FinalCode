@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -202,10 +203,16 @@ public class DriveSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Controller Rot", m_positionControllerAngle.calculate(m_gyro.getAngle()));
   }
 
+  public void calibrateGyro() {
+    if (DriverStation.isDisabled()) {
+      m_gyro.calibrate();
+    }
+  }
+
   public boolean atTargetPosition() {
-    boolean atY = m_positionControllerY.getPositionError() < Constants.Drive.PositionPID.kAllowedError;
-    boolean atX = m_positionControllerX.getPositionError() < Constants.Drive.PositionPID.kAllowedError;
-    boolean atZ = m_positionControllerAngle.getPositionError() < Constants.Drive.AbsoluteAnglePID.kAllowedError;
+    boolean atY = Math.abs(m_positionControllerY.getPositionError()) < Constants.Drive.PositionPID.kAllowedError;
+    boolean atX = Math.abs(m_positionControllerX.getPositionError()) < Constants.Drive.PositionPID.kAllowedError;
+    boolean atZ = Math.abs(m_positionControllerAngle.getPositionError()) < Constants.Drive.AbsoluteAnglePID.kAllowedError;
     return atY && atX && atZ;
   }
 

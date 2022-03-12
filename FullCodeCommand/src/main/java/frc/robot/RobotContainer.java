@@ -13,8 +13,9 @@ import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.ManualLift;
 import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.FeedbackSystem;
+import frc.robot.subsystems.FeedbackSubsystem;
 import frc.robot.subsystems.LiftSubsystem;
+import frc.robot.subsystems.DriveSubsystem.DriveMode;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -29,7 +30,7 @@ public class RobotContainer {
   private final DriveSubsystem m_drive = new DriveSubsystem(m_gyro);
   private final CargoSubsystem m_cargo = new CargoSubsystem();
   private final LiftSubsystem m_lift = new LiftSubsystem();
-  private final FeedbackSystem m_feedback = new FeedbackSystem(m_gyro, m_pdh, m_controller);
+  private final FeedbackSubsystem m_feedback = new FeedbackSubsystem(m_gyro, m_pdh, m_controller);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -59,6 +60,14 @@ public class RobotContainer {
       whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kSlowSpd) ));
     new JoystickButton(m_controller, XboxController.Button.kRightBumper.value).
       whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kFastSpd) ));
+
+    new JoystickButton(m_controller, XboxController.Button.kX.value).
+      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.DEFAULT) ));
+      new JoystickButton(m_controller, XboxController.Button.kY.value).
+      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.FIELD_CENTRIC) ));
+
+    new JoystickButton(m_controller, XboxController.Button.kRightStick.value).
+      whenPressed(new InstantCommand(() -> m_drive.calibrateGyro() ));
     
     new JoystickButton(m_joystick, 2)
       .whenPressed(new InstantCommand(() -> m_cargo.setIntakeStatus(true) ))
