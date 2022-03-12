@@ -79,4 +79,13 @@ public final class Constants {
         public static final int kLeftLimitPort = 8;
         public static final int kRightLimitPort = 9;
     }
+
+    public static final class Feedback {
+        public static final int kDrivePowerChannels[] = {4,7,16,19};
+        public static final double kRumblePulseWidth = 0.3; // Duration of rumble pulse
+        public static final double kRumblePulseRate = 3;
+        public static final double kRumbleStrength = 1;
+        public static final double kAccelerationRumbleThreshold = 8.5;
+        public static final double kCurrentRatioRumbleThreshold = 3;
+    }
 }

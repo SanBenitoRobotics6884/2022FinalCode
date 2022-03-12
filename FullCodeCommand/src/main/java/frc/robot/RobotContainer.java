@@ -4,28 +4,39 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.ManualLift;
 import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.FeedbackSystem;
 import frc.robot.subsystems.LiftSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem m_drive = new DriveSubsystem();
-  private final CargoSubsystem m_cargo = new CargoSubsystem();
-  private final LiftSubsystem m_lift = new LiftSubsystem();
+  private ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+  private PowerDistribution m_pdh = new PowerDistribution();
+
   private final Joystick m_joystick = new Joystick(0);
   private final XboxController m_controller = new XboxController(1);
 
+  private final DriveSubsystem m_drive = new DriveSubsystem(m_gyro);
+  private final CargoSubsystem m_cargo = new CargoSubsystem();
+  private final LiftSubsystem m_lift = new LiftSubsystem();
+  private final FeedbackSystem m_feedback = new FeedbackSystem(m_gyro, m_pdh, m_controller);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the button bindings
+    
+    m_gyro.calibrate();
+    m_gyro.setYawAxis(ADIS16470_IMU.IMUAxis.kY);
+
     configureButtonBindings();
 
     m_drive.setDefaultCommand(new DefaultDrive(m_drive,

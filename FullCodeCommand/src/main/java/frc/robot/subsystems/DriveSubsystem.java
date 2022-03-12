@@ -44,7 +44,7 @@ public class DriveSubsystem extends SubsystemBase {
   private RelativeEncoder m_backRightEncoder;
 
   private MecanumDrive m_drive = new MecanumDrive(m_leftFront, m_leftBack, m_rightFront, m_rightBack);
-  private ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+  private ADIS16470_IMU m_gyro;
   private PIDController m_TurnPID = new PIDController(Constants.Drive.TurnRatePID.kP,
                                                       Constants.Drive.TurnRatePID.kI, 
                                                       Constants.Drive.TurnRatePID.kD);
@@ -62,7 +62,10 @@ public class DriveSubsystem extends SubsystemBase {
   private DriveMode mode = DriveMode.DEFAULT;
 
   /** Creates a new ExampleSubsystem. */
-  public DriveSubsystem() {
+  public DriveSubsystem(ADIS16470_IMU gyro) {
+
+    m_gyro = gyro;
+
     m_leftBack.restoreFactoryDefaults();
     m_leftFront.restoreFactoryDefaults();
     m_rightBack.restoreFactoryDefaults();
@@ -87,8 +90,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightBack.setInverted(true);
     m_rightFront.setInverted(true);
 
-    m_gyro.calibrate();
-    m_gyro.setYawAxis(ADIS16470_IMU.IMUAxis.kY);
     m_TurnPID.disableContinuousInput();
   }
 
