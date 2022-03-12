@@ -144,26 +144,22 @@ public class DriveSubsystem extends SubsystemBase {
     double xspeed = inputProcess(strafe, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
     double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
 
+    turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
+    if (turnPID > 0) {
+      turnPID -= Constants.Drive.TurnRatePID.kF;
+    } else if (turnPID < 0) {
+      turnPID += Constants.Drive.TurnRatePID.kF;
+    }
+
+    SmartDashboard.putNumber("Gyro Turn Assist", turnPID);
+
     if (mode == DriveMode.DEFAULT) {
       m_drive.driveCartesian(yspeed, xspeed, zrot);
     } else if (mode == DriveMode.FIELD_CENTRIC){
       m_drive.driveCartesian(yspeed, xspeed, zrot, m_gyro.getAngle());
     } else if (mode == DriveMode.GYRO_ASSIST) {
-      turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
-      if (turnPID > 0) {
-        turnPID -= Constants.Drive.TurnRatePID.kF;
-      } else if (turnPID < 0) {
-        turnPID += Constants.Drive.TurnRatePID.kF;
-      }
-      SmartDashboard.putNumber("Gyro Turn Assist", turnPID);
+      
     } else if (mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
-      turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
-      if (turnPID > 0) {
-        turnPID -= Constants.Drive.TurnRatePID.kF;
-      } else if (turnPID < 0) {
-        turnPID += Constants.Drive.TurnRatePID.kF;
-      }
-      SmartDashboard.putNumber("Gyro Turn Assist", turnPID);
     }
   }
 

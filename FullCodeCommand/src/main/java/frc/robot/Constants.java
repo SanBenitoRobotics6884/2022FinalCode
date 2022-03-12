@@ -115,4 +115,10 @@ public final class Constants {
         public static final double kAccelerationRumbleThreshold = 8.5;
         public static final double kCurrentRatioRumbleThreshold = 3;
     }
+
+    public static final class Auto {
+        public static final double kSimpleDistY = 24;
+        public static final double kSimpleDistX = 0;
+        public static final double kSimpleDistAngle = 0;
+    }
 }

@@ -4,18 +4,23 @@
 
 package frc.robot;
 
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.DriveDistance;
 import frc.robot.commands.ManualLift;
 import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeedbackSubsystem;
 import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.DriveSubsystem.DriveMode;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -32,8 +37,20 @@ public class RobotContainer {
   private final LiftSubsystem m_lift = new LiftSubsystem();
   private final FeedbackSubsystem m_feedback = new FeedbackSubsystem(m_gyro, m_pdh, m_controller);
 
+  private final Command m_simpleAuto = new DriveDistance(
+    m_drive,
+    Constants.Auto.kSimpleDistX,
+    Constants.Auto.kSimpleDistY,
+    Constants.Auto.kSimpleDistAngle);
+
+  private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    m_autoChooser.setDefaultOption("Simple Auto", m_simpleAuto);
+    //m_autoChooser.addOption();
+    SmartDashboard.putData(m_autoChooser);
     
     m_gyro.calibrate();
     m_gyro.setYawAxis(ADIS16470_IMU.IMUAxis.kY);
@@ -91,6 +108,11 @@ public class RobotContainer {
 
     new JoystickButton(m_joystick, 12)
       .whenPressed(new InstantCommand(() -> m_lift.disengageRatchets() ));
+  }
+
+  public Command getAutonomousCommand() {
+    // An ExampleCommand will run in autonomous
+    return m_simpleAuto;
   }
 
 }
