@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
   private static final double kLowSetpoint = 0; //Units: motor rotations
   private static final double kHighSetpoint = 20; //Units: motor rotations
   private static final double kMaxVoltageLeft = -4; //CHANGE BACK TO 4
-  private static final double kMaxVoltageRight = -4; //CHANGE BACK TO 4
+  private static final double kMaxVoltageRight = -4.5; //CHANGE BACK TO 4
   private static final double kServoExtendLeft = -0.1;
   private static final double kServoExtendRight = 0;
   private static final double kServoRetractLeft = -0.55;
@@ -229,12 +229,12 @@ public class Robot extends TimedRobot {
         targetLiftTime = Timer.getFPGATimestamp() + kRatchetDelay;
       }
       if (Timer.getFPGATimestamp() >= targetLiftTime) {
-        if (!m_joystick.getRawButton(4)) {
+        if (!m_joystick.getRawButton(4) && m_leftLiftEncoder.getPosition() > -58) {
           m_leftLiftMtr.setVoltage(speed * kMaxVoltageLeft);
         } else {
           m_leftLiftMtr.setVoltage(0);
         }
-        if (!m_joystick.getRawButton(3)) {
+        if (!m_joystick.getRawButton(3) && m_rightLiftEncoder.getPosition() > -58) {
           m_rightLiftMtr.setVoltage(speed * kMaxVoltageRight);
         } else {
           m_rightLiftMtr.setVoltage(0);
