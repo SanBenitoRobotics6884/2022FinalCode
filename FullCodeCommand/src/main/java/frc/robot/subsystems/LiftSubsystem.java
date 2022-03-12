@@ -38,6 +38,8 @@ public class LiftSubsystem extends SubsystemBase {
   private int closedLoopMode = 0; // 1: High, 0: Low
   private boolean isolateLeftArm = false;
   private boolean isolateRightArm = false;
+  private boolean leftHasZeroed = false;
+  private boolean rightHasZeroed = false;
 
   public LiftSubsystem() {
     m_leftLiftMtr.restoreFactoryDefaults();
@@ -87,9 +89,11 @@ public class LiftSubsystem extends SubsystemBase {
   public void periodic() {
     if (!m_leftLimit.get()) {
       m_leftLiftEncoder.setPosition(0);
+      leftHasZeroed = true;
     }
     if (!m_rightLimit.get()) {
       m_rightLiftEncoder.setPosition(0);
+      rightHasZeroed = true;
     }
     // This method will be called once per scheduler run
   }
@@ -99,9 +103,7 @@ public class LiftSubsystem extends SubsystemBase {
     if (Math.abs(speed) < 0.1) {
       speed = 0;
     }
-
-    SmartDashboard.putNumber("Position", m_rightLiftEncoder.getPosition());
-
+    
     if (speed < 0) { //Retracting Lift
       m_leftAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
       m_rightAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
@@ -117,18 +119,21 @@ public class LiftSubsystem extends SubsystemBase {
         m_rightLiftMtr.setVoltage(0);
       }
 
-    } else {
-      if (!isolateRightArm && m_leftLiftEncoder.getPosition() > Constants.Lift.kMaxHeight) {
+    } else if (leftHasZeroed && rightHasZeroed) { // Extending Lift
+      if (!isolateRightArm && m_leftLiftEncoder.getPosition() < Constants.Lift.kMaxHeight) {
         m_leftLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageLeft);
       } else {
         m_leftLiftMtr.setVoltage(0);
       }
-      if (!isolateLeftArm && m_rightLiftEncoder.getPosition() > Constants.Lift.kMaxHeight) {
+      if (!isolateLeftArm && m_rightLiftEncoder.getPosition() < Constants.Lift.kMaxHeight) {
         m_rightLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageRight);
       } else {
         m_rightLiftMtr.setVoltage(0);
       }
 
+    } else {
+      m_rightLiftMtr.setVoltage(0);
+      m_leftLiftMtr.setVoltage(0);
     }
 
     prevLiftSpeed = speed;
