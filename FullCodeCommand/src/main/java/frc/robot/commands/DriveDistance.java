@@ -45,6 +45,8 @@ public class DriveDistance extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_drive.atTargetPosition();
+    System.out.println("Finished");
+    //return m_drive.atTargetPosition();
+    return false;
   }
 }

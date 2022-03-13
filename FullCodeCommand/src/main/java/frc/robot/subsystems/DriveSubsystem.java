@@ -71,9 +71,9 @@ public class DriveSubsystem extends SubsystemBase {
     = new TrapezoidProfile.Constraints(Constants.Drive.AbsoluteAnglePID.kMaxVelRot, Constants.Drive.AbsoluteAnglePID.kMaxAccRot);
 
   private ProfiledPIDController m_positionControllerAngle = new ProfiledPIDController
-    (Constants.Drive.PositionPID.kP,
-    Constants.Drive.PositionPID.kI,
-    Constants.Drive.PositionPID.kD,
+    (Constants.Drive.AbsoluteAnglePID.kP,
+    Constants.Drive.AbsoluteAnglePID.kI,
+    Constants.Drive.AbsoluteAnglePID.kD,
     m_angleConstraints);
 
   private double turnPID = 0;
@@ -86,7 +86,7 @@ public class DriveSubsystem extends SubsystemBase {
     GYRO_ASSIST_FIELD_CENTER
   }
 
-  private DriveMode mode = DriveMode.DEFAULT;
+  private DriveMode mode = DriveMode.GYRO_ASSIST;
 
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem(ADIS16470_IMU gyro) {
@@ -103,7 +103,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_backLeftEncoder = m_leftBack.getEncoder();
     m_backRightEncoder = m_rightBack.getEncoder();
 
-    double kConversionFactor = Constants.Drive.kWheelCircumference / Constants.Drive.kDriveGearing;
+    double kConversionFactor = 0.028;
     m_frontLeftEncoder.setVelocityConversionFactor(kConversionFactor);
     m_frontRightEncoder.setVelocityConversionFactor(kConversionFactor);
     m_backLeftEncoder.setVelocityConversionFactor(kConversionFactor);
@@ -133,6 +133,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Pose X", m_pose.getX());
     SmartDashboard.putNumber("Pose Y", m_pose.getY());
+    SmartDashboard.putNumber("Controller Y", m_positionControllerY.calculate(m_pose.getX()));
+    SmartDashboard.putNumber("Controller X", m_positionControllerX.calculate(m_pose.getY()));
+    SmartDashboard.putNumber("Controller Rot", m_positionControllerAngle.calculate(m_gyro.getAngle()));
     
   }
 
@@ -140,8 +143,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void simulationPeriodic() { }
 
   public void drive(double forw, double strafe, double rot) {
-    double yspeed = -inputProcess(forw, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
-    double xspeed = inputProcess(strafe, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
+    double yspeed = -inputProcess(forw, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, false);
+    double xspeed = inputProcess(strafe, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, false);
     double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
 
     turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
@@ -151,15 +154,14 @@ public class DriveSubsystem extends SubsystemBase {
       turnPID += Constants.Drive.TurnRatePID.kF;
     }
 
-    SmartDashboard.putNumber("Gyro Turn Assist", turnPID);
-
     if (mode == DriveMode.DEFAULT) {
       m_drive.driveCartesian(yspeed, xspeed, zrot);
     } else if (mode == DriveMode.FIELD_CENTRIC){
       m_drive.driveCartesian(yspeed, xspeed, zrot, m_gyro.getAngle());
     } else if (mode == DriveMode.GYRO_ASSIST) {
-      
+      m_drive.driveCartesian(yspeed, xspeed, turnPID);
     } else if (mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
+      m_drive.driveCartesian(yspeed, xspeed, turnPID, m_gyro.getAngle());
     }
   }
 
@@ -176,9 +178,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setPositionTarget(double xDist, double yDist, double zRot) {
-    m_positionControllerY.reset(0);
-    m_positionControllerX.reset(0);
-    m_positionControllerAngle.reset(0);
 
     m_positionControllerY.setGoal(yDist);
     m_positionControllerX.setGoal(xDist);
@@ -186,17 +185,12 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveTowardTarget() {
-    /*
+    
     m_drive.driveCartesian(
-      m_positionControllerY.calculate(m_pose.getY()),
-      m_positionControllerX.calculate(m_pose.getX()),
+      m_positionControllerY.calculate(m_pose.getX()),
+      -m_positionControllerX.calculate(m_pose.getY()),
       m_positionControllerAngle.calculate(m_gyro.getAngle()),
       m_gyro.getAngle());
-    */
-    
-      SmartDashboard.putNumber("Controller Y", m_positionControllerY.calculate(m_pose.getY()));
-      SmartDashboard.putNumber("Controller X", m_positionControllerX.calculate(m_pose.getX()));
-      SmartDashboard.putNumber("Controller Rot", m_positionControllerAngle.calculate(m_gyro.getAngle()));
   }
 
   public void calibrateGyro() {

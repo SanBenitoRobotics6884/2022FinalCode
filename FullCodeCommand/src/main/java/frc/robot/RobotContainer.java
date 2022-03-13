@@ -79,9 +79,9 @@ public class RobotContainer {
       whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kFastSpd) ));
 
     new JoystickButton(m_controller, XboxController.Button.kX.value).
-      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.DEFAULT) ));
+      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.GYRO_ASSIST) ));
       new JoystickButton(m_controller, XboxController.Button.kY.value).
-      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.FIELD_CENTRIC) ));
+      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.GYRO_ASSIST_FIELD_CENTER) ));
 
     new JoystickButton(m_controller, XboxController.Button.kRightStick.value).
       whenPressed(new InstantCommand(() -> m_drive.calibrateGyro() ));

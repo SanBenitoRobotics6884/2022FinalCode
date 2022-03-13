@@ -17,30 +17,30 @@ import edu.wpi.first.math.geometry.Translation2d;
 public final class Constants {
     public static final class Drive {
         public final class TurnRatePID {
-            public static final double kP = 0.008;
+            public static final double kP = 0.002;
             public static final double kI = 0;
-            public static final double kD = 0.00005;
-            public static final double kF = 0.01;
+            public static final double kD = 0.0;
+            public static final double kF = 0.0;
         }
 
         public final class AbsoluteAnglePID {
-            public static final double kP = 0.008;
+            public static final double kP = 0.003;
             public static final double kI = 0;
-            public static final double kD = 0.00005;
-            public static final double kF = 0.01;
-            public static final double kMaxVelRot = 5;
-            public static final double kMaxAccRot = 2.5;
-            public static final double kAllowedError = 0.5;
+            public static final double kD = 0.0;
+            public static final double kF = 0.0;
+            public static final double kMaxVelRot = 180;
+            public static final double kMaxAccRot = 90;
+            public static final double kAllowedError = 0.1;
         }
 
         public final class PositionPID {
-            public static final double kP = 0.008;
+            public static final double kP = 0.5;
             public static final double kI = 0;
-            public static final double kD = 0.00005;
-            public static final double kF = 0.01;
+            public static final double kD = 0.0;
+            public static final double kF = 0.0;
             public static final double kMaxVel = 5;
             public static final double kMaxAcc = 2.5;
-            public static final double kAllowedError = 0.5;
+            public static final double kAllowedError = 0.001;
         }
 
         public static final Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
@@ -58,7 +58,7 @@ public final class Constants {
         public static final double kSlowSpd = 0.4;
         public static final double kFastSpd = 0.8;
         public static final double kdrivedeadband = 0.1;
-        public static final double kMaxTurn = 360;
+        public static final double kMaxTurn = 720;
 
     }
 
@@ -117,8 +117,8 @@ public final class Constants {
     }
 
     public static final class Auto {
-        public static final double kSimpleDistY = 24;
-        public static final double kSimpleDistX = 0;
-        public static final double kSimpleDistAngle = 0;
+        public static final double kSimpleDistY = 1;
+        public static final double kSimpleDistX = 1;
+        public static final double kSimpleDistAngle = 180;
     }
 }
