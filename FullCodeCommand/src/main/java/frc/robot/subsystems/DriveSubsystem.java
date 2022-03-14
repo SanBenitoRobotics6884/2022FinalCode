@@ -221,10 +221,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  public boolean atTargetPosition() {
-    boolean atY = Math.abs(m_positionControllerY.getPositionError()) < Constants.Drive.PositionPID.kAllowedError;
-    boolean atX = Math.abs(m_positionControllerX.getPositionError()) < Constants.Drive.PositionPID.kAllowedError;
-    boolean atZ = Math.abs(m_positionControllerAngle.getPositionError()) < Constants.Drive.AbsoluteAnglePID.kAllowedError;
+  public boolean atTargetPosition(double yTarget, double xTarget, double angleTarget) {
+    boolean atY = Math.abs(yTarget - m_pose.getY()) < Constants.Drive.PositionPID.kAllowedError;
+    boolean atX = Math.abs(xTarget - m_pose.getX()) < Constants.Drive.PositionPID.kAllowedError;
+    boolean atZ = Math.abs(angleTarget - m_gyro.getAngle()) < Constants.Drive.AbsoluteAnglePID.kAllowedError;
     
     drive(0,0,0);
 
