@@ -53,8 +53,8 @@ public final class Constants {
         public static final int kLeftBackMotor = 2;
         public static final int kRightBackMotor = 4;
 
-        public static final double kDriveGearing = 10.71;
-        public static final double kWheelCircumference = 6 * Math.PI;
+        public static final double kConversionFactor = 0.028;
+        public static final double kRateLimit = 1;
         public static final double kSlowSpd = 0.4;
         public static final double kFastSpd = 0.8;
         public static final double kdrivedeadband = 0.1;

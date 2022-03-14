@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
@@ -76,6 +77,9 @@ public class DriveSubsystem extends SubsystemBase {
     Constants.Drive.AbsoluteAnglePID.kD,
     m_angleConstraints);
 
+    private SlewRateLimiter m_xLimiter = new SlewRateLimiter(Constants.Drive.kRateLimit);
+    private SlewRateLimiter m_yLimiter = new SlewRateLimiter(Constants.Drive.kRateLimit);
+
   private double turnPID = 0;
   private double maxDriveSpdScalar = Constants.Drive.kSlowSpd;
 
@@ -103,16 +107,15 @@ public class DriveSubsystem extends SubsystemBase {
     m_backLeftEncoder = m_leftBack.getEncoder();
     m_backRightEncoder = m_rightBack.getEncoder();
 
-    double kConversionFactor = 0.028;
-    m_frontLeftEncoder.setVelocityConversionFactor(kConversionFactor);
-    m_frontRightEncoder.setVelocityConversionFactor(kConversionFactor);
-    m_backLeftEncoder.setVelocityConversionFactor(kConversionFactor);
-    m_backRightEncoder.setVelocityConversionFactor(kConversionFactor);
+    m_frontLeftEncoder.setVelocityConversionFactor(Constants.Drive.kConversionFactor);
+    m_frontRightEncoder.setVelocityConversionFactor(Constants.Drive.kConversionFactor);
+    m_backLeftEncoder.setVelocityConversionFactor(Constants.Drive.kConversionFactor);
+    m_backRightEncoder.setVelocityConversionFactor(Constants.Drive.kConversionFactor);
 
-    m_frontLeftEncoder.setPositionConversionFactor(kConversionFactor);
-    m_frontRightEncoder.setPositionConversionFactor(kConversionFactor);
-    m_backLeftEncoder.setPositionConversionFactor(kConversionFactor);
-    m_backRightEncoder.setPositionConversionFactor(kConversionFactor);
+    m_frontLeftEncoder.setPositionConversionFactor(Constants.Drive.kConversionFactor);
+    m_frontRightEncoder.setPositionConversionFactor(Constants.Drive.kConversionFactor);
+    m_backLeftEncoder.setPositionConversionFactor(Constants.Drive.kConversionFactor);
+    m_backRightEncoder.setPositionConversionFactor(Constants.Drive.kConversionFactor);
 
     m_rightBack.setInverted(true);
     m_rightFront.setInverted(true);
@@ -153,6 +156,9 @@ public class DriveSubsystem extends SubsystemBase {
     } else if (turnPID < 0) {
       turnPID += Constants.Drive.TurnRatePID.kF;
     }
+
+    yspeed = m_yLimiter.calculate(yspeed);
+    xspeed = m_xLimiter.calculate(xspeed);
 
     if (mode == DriveMode.DEFAULT) {
       m_drive.driveCartesian(yspeed, xspeed, zrot);
