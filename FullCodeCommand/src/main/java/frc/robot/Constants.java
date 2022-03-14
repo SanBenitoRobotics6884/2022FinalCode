@@ -24,23 +24,23 @@ public final class Constants {
         }
 
         public final class AbsoluteAnglePID {
-            public static final double kP = 0.003;
+            public static final double kP = 0.005;
             public static final double kI = 0;
             public static final double kD = 0.0;
             public static final double kF = 0.0;
-            public static final double kMaxVelRot = 180;
-            public static final double kMaxAccRot = 90;
-            public static final double kAllowedError = 0.1;
+            public static final double kMaxVelRot = 360;
+            public static final double kMaxAccRot = 180;
+            public static final double kAllowedError = 2;
         }
 
         public final class PositionPID {
-            public static final double kP = 0.5;
+            public static final double kP = 0.4;
             public static final double kI = 0;
             public static final double kD = 0.0;
-            public static final double kF = 0.0;
-            public static final double kMaxVel = 5;
-            public static final double kMaxAcc = 2.5;
-            public static final double kAllowedError = 0.001;
+            public static final double kF = 0.025;
+            public static final double kMaxVel = 0.7;
+            public static final double kMaxAcc = 0.3;
+            public static final double kAllowedError = 0.05;
         }
 
         public static final Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
@@ -112,13 +112,13 @@ public final class Constants {
         public static final double kRumblePulseWidth = 0.3; // Duration of rumble pulse
         public static final double kRumblePulseRate = 3;
         public static final double kRumbleStrength = 1;
-        public static final double kAccelerationRumbleThreshold = 8.5;
-        public static final double kCurrentRatioRumbleThreshold = 3;
+        public static final double kAccelerationRumbleThreshold = 15;
+        public static final double kCurrentRatioRumbleThreshold = 5;
     }
 
     public static final class Auto {
-        public static final double kSimpleDistY = 1;
-        public static final double kSimpleDistX = 1;
-        public static final double kSimpleDistAngle = 180;
+        public static final double kSimpleDistY = 0; // Positive = Left
+        public static final double kSimpleDistX = 0.5; // Positive = Forw
+        public static final double kSimpleDistAngle = 0;
     }
 }

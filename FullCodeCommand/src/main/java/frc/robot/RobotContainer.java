@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DriveDistance;
+import frc.robot.commands.DumpAndGo;
+import frc.robot.commands.IntakeAndDump;
 import frc.robot.commands.ManualLift;
 import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -43,13 +45,17 @@ public class RobotContainer {
     Constants.Auto.kSimpleDistY,
     Constants.Auto.kSimpleDistAngle);
 
+    private final Command m_dumpAndGo = new DumpAndGo(m_drive, m_cargo);
+    private final Command m_intakeDump = new IntakeAndDump(m_drive, m_cargo);
+
   private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
     m_autoChooser.setDefaultOption("Simple Auto", m_simpleAuto);
-    //m_autoChooser.addOption();
+    m_autoChooser.addOption("Dump and Go", m_dumpAndGo);
+    m_autoChooser.addOption("Intake and Dump", m_intakeDump);
     SmartDashboard.putData(m_autoChooser);
     
     m_gyro.calibrate();
@@ -112,7 +118,7 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_simpleAuto;
+    return m_autoChooser.getSelected();
   }
 
 }

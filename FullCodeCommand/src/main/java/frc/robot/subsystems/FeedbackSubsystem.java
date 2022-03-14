@@ -30,7 +30,7 @@ public class FeedbackSubsystem extends SubsystemBase {
 
     CameraServer.startAutomaticCapture(0);
     CameraServer.startAutomaticCapture(1);
-    CameraServer.startAutomaticCapture(2);
+    //CameraServer.startAutomaticCapture(2);
   }
 
   @Override

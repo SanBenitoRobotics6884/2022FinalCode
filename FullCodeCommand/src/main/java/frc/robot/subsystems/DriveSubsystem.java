@@ -159,9 +159,9 @@ public class DriveSubsystem extends SubsystemBase {
     } else if (mode == DriveMode.FIELD_CENTRIC){
       m_drive.driveCartesian(yspeed, xspeed, zrot, m_gyro.getAngle());
     } else if (mode == DriveMode.GYRO_ASSIST) {
-      m_drive.driveCartesian(yspeed, xspeed, turnPID);
+      m_drive.driveCartesian(yspeed, xspeed, inputProcess(turnPID, 0.05, 1, false));
     } else if (mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
-      m_drive.driveCartesian(yspeed, xspeed, turnPID, m_gyro.getAngle());
+      m_drive.driveCartesian(yspeed, xspeed, inputProcess(turnPID, 0.05, 1, false), m_gyro.getAngle());
     }
   }
 
@@ -185,11 +185,33 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveTowardTarget() {
+
+    double strafe = -m_positionControllerX.calculate(m_pose.getY());
+    double forw = m_positionControllerY.calculate(m_pose.getX());
+    double rot = m_positionControllerAngle.calculate(m_gyro.getAngle());
+
+    if (rot > 0) {
+      rot += Constants.Drive.AbsoluteAnglePID.kF;
+    } else if (rot < 0) {
+      rot -= Constants.Drive.AbsoluteAnglePID.kF;
+    }
+
+    if (forw > 0) {
+      forw += Constants.Drive.PositionPID.kF;
+    } else if (forw < 0) {
+      forw -= Constants.Drive.PositionPID.kF;
+    }
+
+    if (strafe > 0) {
+      strafe += Constants.Drive.PositionPID.kF;
+    } else if (strafe < 0) {
+      strafe -= Constants.Drive.PositionPID.kF;
+    }
     
     m_drive.driveCartesian(
-      m_positionControllerY.calculate(m_pose.getX()),
-      -m_positionControllerX.calculate(m_pose.getY()),
-      m_positionControllerAngle.calculate(m_gyro.getAngle()),
+      forw,
+      strafe,
+      rot,
       m_gyro.getAngle());
   }
 
@@ -203,6 +225,9 @@ public class DriveSubsystem extends SubsystemBase {
     boolean atY = Math.abs(m_positionControllerY.getPositionError()) < Constants.Drive.PositionPID.kAllowedError;
     boolean atX = Math.abs(m_positionControllerX.getPositionError()) < Constants.Drive.PositionPID.kAllowedError;
     boolean atZ = Math.abs(m_positionControllerAngle.getPositionError()) < Constants.Drive.AbsoluteAnglePID.kAllowedError;
+    
+    drive(0,0,0);
+
     return atY && atX && atZ;
   }
 
