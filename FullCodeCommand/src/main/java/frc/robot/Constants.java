@@ -54,7 +54,7 @@ public final class Constants {
         public static final int kRightBackMotor = 4;
 
         public static final double kConversionFactor = 0.028;
-        public static final double kRateLimit = 1;
+        public static final double kRateLimit = 1.5;
         public static final double kSlowSpd = 0.4;
         public static final double kFastSpd = 0.8;
         public static final double kdrivedeadband = 0.1;
@@ -92,7 +92,7 @@ public final class Constants {
         public static final double kLowSetpoint = 0; //Units: motor rotations
         public static final double kHighSetpoint = 20; //Units: motor rotations
         public static final double kMaxVoltageLeft = 4;
-        public static final double kMaxVoltageRight = 4.5;
+        public static final double kMaxVoltageRight = 4;
         public static final double kRatchetDeploy = 0;
         public static final double kRatchetRetract = -0.5;
         public static final double kRatchetDelay = 3;

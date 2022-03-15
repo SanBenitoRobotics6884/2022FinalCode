@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -98,6 +99,9 @@ public class LiftSubsystem extends SubsystemBase {
   }
 
   public void openLoopLift(double speed) {
+
+    speed = 0; // DELETE
+
     //Deadband
     if (Math.abs(speed) < 0.1) {
       speed = 0;
@@ -174,7 +178,6 @@ public class LiftSubsystem extends SubsystemBase {
       if (Timer.getFPGATimestamp() >= targetLiftTime) {
         m_leftLiftPid.setReference(Constants.Lift.kHighSetpoint, CANSparkMax.ControlType.kSmartMotion);
         m_rightLiftPid.setReference(Constants.Lift.kHighSetpoint, CANSparkMax.ControlType.kSmartMotion);
-        System.out.println("Run");
       } else {
         m_leftLiftMtr.setVoltage(0);
         m_rightLiftMtr.setVoltage(0);

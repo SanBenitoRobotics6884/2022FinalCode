@@ -4,12 +4,16 @@
 
 package frc.robot.subsystems;
 
+import org.opencv.video.Video;
+
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -28,9 +32,21 @@ public class FeedbackSubsystem extends SubsystemBase {
     m_pdh = pdh;
     m_controller = controller;
 
-    CameraServer.startAutomaticCapture(0);
-    CameraServer.startAutomaticCapture(1);
-    //CameraServer.startAutomaticCapture(2);
+    var cam0 = CameraServer.startAutomaticCapture(0);
+    var cam1 = CameraServer.startAutomaticCapture(1);
+    var cam2 = CameraServer.startAutomaticCapture(2);
+
+    cam0.setPixelFormat(PixelFormat.kMJPEG);
+    cam1.setPixelFormat(PixelFormat.kMJPEG);
+    cam2.setPixelFormat(PixelFormat.kMJPEG);
+
+    cam0.setResolution(120, 120);
+    cam1.setResolution(120, 120);
+    cam2.setResolution(360, 240);
+
+    cam0.setFPS(10);
+    cam1.setFPS(5);
+    cam2.setFPS(30);
   }
 
   @Override
