@@ -21,6 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -134,12 +135,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_pose = m_odometry.update(gyroAngle, wheelSpeeds);
 
-    SmartDashboard.putNumber("Pose X", m_pose.getX());
-    SmartDashboard.putNumber("Pose Y", m_pose.getY());
-    SmartDashboard.putNumber("Controller Y", m_positionControllerY.calculate(m_pose.getX()));
-    SmartDashboard.putNumber("Controller X", m_positionControllerX.calculate(m_pose.getY()));
-    SmartDashboard.putNumber("Controller Rot", m_positionControllerAngle.calculate(m_gyro.getAngle()));
-    
+    /*
+    Shuffleboard.getTab("Debug").addNumber("Pose X", () -> m_pose.getX());
+    Shuffleboard.getTab("Debug").addNumber("Pose Y", () -> m_pose.getY());
+    Shuffleboard.getTab("Debug").addNumber("Controller Y", () -> m_positionControllerY.calculate(m_pose.getX()));
+    Shuffleboard.getTab("Debug").addNumber("Controller X", () -> m_positionControllerX.calculate(m_pose.getY()));
+    Shuffleboard.getTab("Debug").addNumber("Controller Rot", () -> m_positionControllerAngle.calculate(m_gyro.getAngle()));
+    */
   }
 
   @Override
@@ -151,6 +153,7 @@ public class DriveSubsystem extends SubsystemBase {
     double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
 
     turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
+    SmartDashboard.putNumber("Turn PID", turnPID);
     if (turnPID > 0) {
       turnPID -= Constants.Drive.TurnRatePID.kF;
     } else if (turnPID < 0) {

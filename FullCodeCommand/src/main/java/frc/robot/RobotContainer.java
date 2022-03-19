@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ControlScheme;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DumpAndGo;
@@ -56,18 +58,28 @@ public class RobotContainer {
     m_autoChooser.setDefaultOption("Simple Auto", m_simpleAuto);
     m_autoChooser.addOption("Dump and Go", m_dumpAndGo);
     m_autoChooser.addOption("Intake and Dump", m_intakeDump);
-    SmartDashboard.putData(m_autoChooser);
+    //Shuffleboard.getTab("Dashboard").add(m_autoChooser);
     
     m_gyro.calibrate();
     m_gyro.setYawAxis(ADIS16470_IMU.IMUAxis.kY);
 
     configureButtonBindings();
 
-    m_drive.setDefaultCommand(new DefaultDrive(m_drive,
-      () -> m_controller.getLeftY(),
-      () -> m_controller.getLeftX(),
-      () -> m_controller.getRightX())
-    );
+    if (Constants.Drive.scheme == ControlScheme.DEFAULT) {
+      m_drive.setDefaultCommand(new DefaultDrive(m_drive,
+        () -> m_controller.getLeftY(),
+        () -> m_controller.getLeftX(),
+        () -> m_controller.getRightX())
+      );
+    } else if (Constants.Drive.scheme == ControlScheme.TEST) {
+      m_drive.setDefaultCommand(new DefaultDrive(m_drive,
+        () -> m_controller.getLeftY(),
+        () -> m_controller.getRightTriggerAxis() - m_controller.getLeftTriggerAxis(),
+        () -> m_controller.getRightX())
+      );
+    }
+
+    
 
     m_lift.setDefaultCommand(new ManualLift(m_lift, () -> m_joystick.getY() ));
   }

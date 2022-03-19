@@ -58,7 +58,8 @@ public final class Constants {
         public static final double kSlowSpd = 0.4;
         public static final double kFastSpd = 0.8;
         public static final double kdrivedeadband = 0.1;
-        public static final double kMaxTurn = 720;
+        public static final double kMaxTurn = 520;
+        public static final ControlScheme scheme = ControlScheme.TEST;
 
     }
 
@@ -112,13 +113,19 @@ public final class Constants {
         public static final double kRumblePulseWidth = 0.3; // Duration of rumble pulse
         public static final double kRumblePulseRate = 3;
         public static final double kRumbleStrength = 1;
-        public static final double kAccelerationRumbleThreshold = 15;
-        public static final double kCurrentRatioRumbleThreshold = 5;
+        public static final double kAccelerationRumbleThreshold = 30;
+        public static final double kCurrentRatioRumbleThreshold = 10;
     }
 
     public static final class Auto {
         public static final double kSimpleDistY = 0; // Positive = Left
         public static final double kSimpleDistX = 0.5; // Positive = Forw
         public static final double kSimpleDistAngle = 0;
+    }
+
+    public enum ControlScheme {
+        DEFAULT,
+        CONNOR,
+        TEST
     }
 }
