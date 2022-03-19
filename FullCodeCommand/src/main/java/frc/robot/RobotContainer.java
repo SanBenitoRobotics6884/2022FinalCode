@@ -19,6 +19,7 @@ import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DumpAndGo;
 import frc.robot.commands.IntakeAndDump;
 import frc.robot.commands.ManualLift;
+import frc.robot.commands.SimpleAuto;
 import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeedbackSubsystem;
@@ -41,12 +42,8 @@ public class RobotContainer {
   private final LiftSubsystem m_lift = new LiftSubsystem();
   private final FeedbackSubsystem m_feedback = new FeedbackSubsystem(m_gyro, m_pdh, m_controller);
 
-  private final Command m_simpleAuto = new DriveDistance(
-    m_drive,
-    Constants.Auto.kSimpleDistX,
-    Constants.Auto.kSimpleDistY,
-    Constants.Auto.kSimpleDistAngle);
-
+  
+  private final Command m_simpleAuto = new SimpleAuto(m_drive, m_cargo);
     private final Command m_dumpAndGo = new DumpAndGo(m_drive, m_cargo);
     private final Command m_intakeDump = new IntakeAndDump(m_drive, m_cargo);
 
@@ -58,24 +55,36 @@ public class RobotContainer {
     m_autoChooser.setDefaultOption("Simple Auto", m_simpleAuto);
     m_autoChooser.addOption("Dump and Go", m_dumpAndGo);
     m_autoChooser.addOption("Intake and Dump", m_intakeDump);
-    //Shuffleboard.getTab("Dashboard").add(m_autoChooser);
+    SmartDashboard.putData(m_autoChooser);
     
     m_gyro.calibrate();
     m_gyro.setYawAxis(ADIS16470_IMU.IMUAxis.kY);
 
     configureButtonBindings();
 
-    if (Constants.Drive.scheme == ControlScheme.DEFAULT) {
+    if (Constants.Drive.scheme == ControlScheme.LSTICKTRANSLATE) {
       m_drive.setDefaultCommand(new DefaultDrive(m_drive,
         () -> m_controller.getLeftY(),
         () -> m_controller.getLeftX(),
         () -> m_controller.getRightX())
       );
-    } else if (Constants.Drive.scheme == ControlScheme.TEST) {
+    } else if (Constants.Drive.scheme == ControlScheme.TRIGGERSTRAFE) {
       m_drive.setDefaultCommand(new DefaultDrive(m_drive,
         () -> m_controller.getLeftY(),
         () -> m_controller.getRightTriggerAxis() - m_controller.getLeftTriggerAxis(),
         () -> m_controller.getRightX())
+      );
+    } else if (Constants.Drive.scheme == ControlScheme.RSTICKTRANSLATE) {
+      m_drive.setDefaultCommand(new DefaultDrive(m_drive,
+        () -> m_controller.getRightY(),
+        () -> m_controller.getRightX(),
+        () -> m_controller.getLeftX())
+      );
+    } else if (Constants.Drive.scheme == ControlScheme.TRIGGERSTRAFEINVERT) {
+      m_drive.setDefaultCommand(new DefaultDrive(m_drive,
+        () -> m_controller.getRightY(),
+        () -> m_controller.getRightTriggerAxis() - m_controller.getLeftTriggerAxis(),
+        () -> m_controller.getLeftX())
       );
     }
 
@@ -95,11 +104,14 @@ public class RobotContainer {
       whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kSlowSpd) ));
     new JoystickButton(m_controller, XboxController.Button.kRightBumper.value).
       whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kFastSpd) ));
+    new JoystickButton(m_controller, XboxController.Button.kLeftStick.value).
+      whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kTurboSpd) ))
+      .whenReleased(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kFastSpd) ));
 
     new JoystickButton(m_controller, XboxController.Button.kX.value).
-      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.GYRO_ASSIST) ));
-      new JoystickButton(m_controller, XboxController.Button.kY.value).
-      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.GYRO_ASSIST_FIELD_CENTER) ));
+      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.EXPERIMENTAL) ));
+    new JoystickButton(m_controller, XboxController.Button.kY.value).
+      whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.EXPERIMENTALGYROASSIST) ));
 
     new JoystickButton(m_controller, XboxController.Button.kRightStick.value).
       whenPressed(new InstantCommand(() -> m_drive.calibrateGyro() ));

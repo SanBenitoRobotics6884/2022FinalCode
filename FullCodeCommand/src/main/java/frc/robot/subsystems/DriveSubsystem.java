@@ -82,16 +82,19 @@ public class DriveSubsystem extends SubsystemBase {
     private SlewRateLimiter m_yLimiter = new SlewRateLimiter(Constants.Drive.kRateLimit);
 
   private double turnPID = 0;
+  private double angleSetpoint = 0;
   private double maxDriveSpdScalar = Constants.Drive.kSlowSpd;
 
   public enum DriveMode{
     DEFAULT,
     FIELD_CENTRIC,
     GYRO_ASSIST,
-    GYRO_ASSIST_FIELD_CENTER
+    GYRO_ASSIST_FIELD_CENTER,
+    EXPERIMENTAL,
+    EXPERIMENTALGYROASSIST
   }
 
-  private DriveMode mode = DriveMode.GYRO_ASSIST;
+  private DriveMode mode = DriveMode.EXPERIMENTAL;
 
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem(ADIS16470_IMU gyro) {
@@ -135,13 +138,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_pose = m_odometry.update(gyroAngle, wheelSpeeds);
 
-    /*
-    Shuffleboard.getTab("Debug").addNumber("Pose X", () -> m_pose.getX());
-    Shuffleboard.getTab("Debug").addNumber("Pose Y", () -> m_pose.getY());
-    Shuffleboard.getTab("Debug").addNumber("Controller Y", () -> m_positionControllerY.calculate(m_pose.getX()));
-    Shuffleboard.getTab("Debug").addNumber("Controller X", () -> m_positionControllerX.calculate(m_pose.getY()));
-    Shuffleboard.getTab("Debug").addNumber("Controller Rot", () -> m_positionControllerAngle.calculate(m_gyro.getAngle()));
-    */
+    SmartDashboard.putNumber("PoseX", m_pose.getX());
+    SmartDashboard.putNumber("PoseY", m_pose.getY());
+    SmartDashboard.putNumber("Angle", m_gyro.getAngle());
   }
 
   @Override
@@ -152,8 +151,15 @@ public class DriveSubsystem extends SubsystemBase {
     double xspeed = inputProcess(strafe, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, false);
     double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
 
-    turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
-    SmartDashboard.putNumber("Turn PID", turnPID);
+    SmartDashboard.putNumber("Angle Target", angleSetpoint);
+
+    if (mode == DriveMode.GYRO_ASSIST || mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
+      turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
+    } else if (mode == DriveMode.EXPERIMENTAL || mode == DriveMode.EXPERIMENTALGYROASSIST) {
+      angleSetpoint += zrot * Constants.Drive.kMaxTurn * 0.02;
+      turnPID = m_positionControllerAngle.calculate(m_gyro.getAngle(), angleSetpoint);
+    }
+
     if (turnPID > 0) {
       turnPID -= Constants.Drive.TurnRatePID.kF;
     } else if (turnPID < 0) {
@@ -167,9 +173,9 @@ public class DriveSubsystem extends SubsystemBase {
       m_drive.driveCartesian(yspeed, xspeed, zrot);
     } else if (mode == DriveMode.FIELD_CENTRIC){
       m_drive.driveCartesian(yspeed, xspeed, zrot, m_gyro.getAngle());
-    } else if (mode == DriveMode.GYRO_ASSIST) {
+    } else if (mode == DriveMode.GYRO_ASSIST || mode == DriveMode.EXPERIMENTAL) {
       m_drive.driveCartesian(yspeed, xspeed, inputProcess(turnPID, 0.05, 1, false));
-    } else if (mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
+    } else if (mode == DriveMode.GYRO_ASSIST_FIELD_CENTER || mode == DriveMode.EXPERIMENTALGYROASSIST) {
       m_drive.driveCartesian(yspeed, xspeed, inputProcess(turnPID, 0.05, 1, false), m_gyro.getAngle());
     }
   }
@@ -183,6 +189,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setDriveMode(DriveMode driveMode) {
+    angleSetpoint = m_gyro.getAngle();
     mode = driveMode;
   }
 
@@ -234,10 +241,14 @@ public class DriveSubsystem extends SubsystemBase {
     boolean atY = Math.abs(yTarget - m_pose.getY()) < Constants.Drive.PositionPID.kAllowedError;
     boolean atX = Math.abs(xTarget - m_pose.getX()) < Constants.Drive.PositionPID.kAllowedError;
     boolean atZ = Math.abs(angleTarget - m_gyro.getAngle()) < Constants.Drive.AbsoluteAnglePID.kAllowedError;
+    System.out.println(Math.abs(xTarget - m_pose.getX()));
     
-    drive(0,0,0);
-
-    return atY && atX && atZ;
+    if (atY && atX && atZ) {
+      System.out.println("HIODFSHIOFSDHIOSDF");
+      drive(0,0,0);
+      return true;
+    }
+    return false;
   }
 
   public DriveMode getDriveMode() {
@@ -254,6 +265,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Pose2d getRobotPose() {
     return m_pose;
+  }
+
+  public void resetPose() {
+    m_pose = new Pose2d();
   }
 
 }

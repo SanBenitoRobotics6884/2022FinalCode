@@ -27,8 +27,7 @@ public class DriveDistance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_drive.setPositionTarget(m_drive.getRobotPose().getY() + m_distY,
-      m_drive.getRobotPose().getX() + m_distX, m_rot);
+    m_drive.setPositionTarget(m_distY, m_distX, m_rot);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

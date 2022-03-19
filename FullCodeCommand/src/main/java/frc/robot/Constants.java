@@ -24,23 +24,23 @@ public final class Constants {
         }
 
         public final class AbsoluteAnglePID {
-            public static final double kP = 0.005;
+            public static final double kP = 0.02;
             public static final double kI = 0;
-            public static final double kD = 0.0;
-            public static final double kF = 0.0;
-            public static final double kMaxVelRot = 360;
-            public static final double kMaxAccRot = 180;
+            public static final double kD = 0.001;
+            public static final double kF = 0.01;
+            public static final double kMaxVelRot = 420;
+            public static final double kMaxAccRot = 1440;
             public static final double kAllowedError = 2;
         }
 
         public final class PositionPID {
-            public static final double kP = 0.4;
+            public static final double kP = 1;
             public static final double kI = 0;
             public static final double kD = 0.0;
             public static final double kF = 0.025;
-            public static final double kMaxVel = 0.7;
-            public static final double kMaxAcc = 0.3;
-            public static final double kAllowedError = 0.05;
+            public static final double kMaxVel = 0.5;
+            public static final double kMaxAcc = 0.5;
+            public static final double kAllowedError = 0.02;
         }
 
         public static final Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
@@ -55,18 +55,19 @@ public final class Constants {
 
         public static final double kConversionFactor = 0.028;
         public static final double kRateLimit = 1.5;
-        public static final double kSlowSpd = 0.4;
-        public static final double kFastSpd = 0.8;
+        public static final double kSlowSpd = 0.3;
+        public static final double kFastSpd = 0.6;
+        public static final double kTurboSpd = 0.9;
         public static final double kdrivedeadband = 0.1;
-        public static final double kMaxTurn = 520;
-        public static final ControlScheme scheme = ControlScheme.TEST;
+        public static final double kMaxTurn = 720;
+        public static final ControlScheme scheme = ControlScheme.LSTICKTRANSLATE;
 
     }
 
     public static final class Cargo {
         public static final double kLwrStorageDelay = 3;
         public static final double kIntkVltge = 6;
-        public static final double kLaunchSpd = 0.75;
+        public static final double kLaunchSpd = 1.0;
         public static final double kLwrMtrSpd = 0.6;
 
         public static final int kIntakeID = 6;
@@ -119,13 +120,14 @@ public final class Constants {
 
     public static final class Auto {
         public static final double kSimpleDistY = 0; // Positive = Left
-        public static final double kSimpleDistX = 0.5; // Positive = Forw
+        public static final double kSimpleDistX = 1.5; // Positive = Forw
         public static final double kSimpleDistAngle = 0;
     }
 
     public enum ControlScheme {
-        DEFAULT,
-        CONNOR,
-        TEST
+        LSTICKTRANSLATE,
+        RSTICKTRANSLATE,
+        TRIGGERSTRAFE,
+        TRIGGERSTRAFEINVERT
     }
 }

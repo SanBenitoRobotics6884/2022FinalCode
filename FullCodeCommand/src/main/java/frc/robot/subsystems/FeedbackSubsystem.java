@@ -39,7 +39,7 @@ public class FeedbackSubsystem extends SubsystemBase {
 
     cam0.setResolution(120, 120);
     cam1.setResolution(120, 120);
-    cam2.setResolution(360, 240);
+    cam2.setResolution(120, 120);
 
     cam0.setFPS(15);
     cam1.setFPS(10);
