@@ -97,8 +97,9 @@ public final class Constants {
         public static final double kHighSetpoint = 20; //Units: motor rotations
         public static final double kMaxVoltageLeft = 4;
         public static final double kMaxVoltageRight = 4;
-        public static final double kRatchetDeploy = 0;
-        public static final double kRatchetRetract = -0.5;
+        public static final double kRatchedEngage = 0;
+        public static final double kLeftRatchetDisengage = -0.5;
+        public static final double kRightRatchedDisengage = -0.5;
         public static final double kRatchetDelay = 3;
         public static final double kMaxHeight = 57; //encoder counts
 

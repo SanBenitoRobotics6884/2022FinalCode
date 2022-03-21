@@ -80,8 +80,8 @@ public class LiftSubsystem extends SubsystemBase {
     m_leftLiftPid.setSmartMotionAllowedClosedLoopError(Constants.Lift.LiftPID.kAllowedErrLift, Constants.Lift.kSmartMotionSlot);
 
     //Deploy ratchets at match start
-    m_leftAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
-    m_rightAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
+    m_leftAcuator.setSpeed(Constants.Lift.kRatchedEngage);
+    m_rightAcuator.setSpeed(Constants.Lift.kRatchedEngage);
   }
 
   @Override
@@ -107,8 +107,8 @@ public class LiftSubsystem extends SubsystemBase {
     }
     
     if (speed < 0) { //Retracting Lift
-      m_leftAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
-      m_rightAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
+      m_leftAcuator.setSpeed(Constants.Lift.kRatchedEngage);
+      m_rightAcuator.setSpeed(Constants.Lift.kRatchedEngage);
 
       if (!isolateRightArm && m_leftLimit.get()) {
         m_leftLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageLeft);
@@ -154,8 +154,8 @@ public class LiftSubsystem extends SubsystemBase {
       //Set target position to retract and deploy ratchet
       m_leftLiftPid.setReference(Constants.Lift.kLowSetpoint, CANSparkMax.ControlType.kSmartMotion);
       m_rightLiftPid.setReference(Constants.Lift.kLowSetpoint, CANSparkMax.ControlType.kSmartMotion);
-      m_leftAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
-      m_rightAcuator.setSpeed(Constants.Lift.kRatchetDeploy);
+      m_leftAcuator.setSpeed(Constants.Lift.kRatchedEngage);
+      m_rightAcuator.setSpeed(Constants.Lift.kRatchedEngage);
       prevRatchet = true;
     }
 
@@ -167,8 +167,8 @@ public class LiftSubsystem extends SubsystemBase {
         m_rightLiftPid.setFF(Constants.Lift.LiftPID.kFUnloadedLift);
       }
 
-      m_leftAcuator.setSpeed(Constants.Lift.kRatchetRetract);
-      m_rightAcuator.setSpeed(Constants.Lift.kRatchetRetract);
+      m_leftAcuator.setSpeed(Constants.Lift.kLeftRatchetDisengage);
+      m_rightAcuator.setSpeed(Constants.Lift.kRightRatchedDisengage);
 
       //Delay 1 second so ratchets can fully deploy
       if (prevRatchet == true) {
@@ -197,8 +197,8 @@ public class LiftSubsystem extends SubsystemBase {
   }
 
   public void disengageRatchets() {
-    m_leftAcuator.setSpeed(Constants.Lift.kRatchetRetract);
-    m_rightAcuator.setSpeed(Constants.Lift.kRatchetRetract);
+    m_leftAcuator.setSpeed(Constants.Lift.kLeftRatchetDisengage);
+    m_rightAcuator.setSpeed(Constants.Lift.kRightRatchedDisengage);
   }
 
   public boolean getLeftArmStatus() {
