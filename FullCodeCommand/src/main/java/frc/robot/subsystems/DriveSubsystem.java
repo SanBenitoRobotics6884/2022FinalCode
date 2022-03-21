@@ -35,6 +35,8 @@ public class DriveSubsystem extends SubsystemBase {
   
   private MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
   private Pose2d m_pose = new Pose2d();
+  private Pose2d m_waypointPose = new Pose2d();
+  private double m_waypointAngle = 0;
 
   private CANSparkMax m_leftFront = new CANSparkMax(Constants.Drive.kLeftFrontMotor, MotorType.kBrushless);
   private CANSparkMax m_rightFront = new CANSparkMax(Constants.Drive.kRightFrontMotor, MotorType.kBrushless);
@@ -266,6 +268,19 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetPose() {
     m_pose = new Pose2d();
+  }
+
+  public void setWaypoint() {
+    m_waypointPose = m_pose;
+    m_waypointAngle = m_gyro.getAngle();
+  }
+
+  public Pose2d getWaypointPose() {
+    return m_waypointPose;
+  }
+  
+  public double getWaypointAngle() {
+    return m_waypointAngle;
   }
 
 }

@@ -23,18 +23,23 @@ public class IntakeAndDump extends SequentialCommandGroup {
       new InstantCommand(() -> cargoSubsystem.setIntakeStatus(true)),
       new DriveDistance(
         driveSubsystem,
-        Constants.Auto.kSimpleDistX,
-        Constants.Auto.kSimpleDistY,
-        Constants.Auto.kSimpleDistAngle),
+        Constants.Auto.kComplexDistX,
+        Constants.Auto.kComplexDistY,
+        Constants.Auto.kComplexAngle),
       new InstantCommand(() -> cargoSubsystem.setIntakeStatus(false)),
       new DriveDistance(
         driveSubsystem,
-        0,
-        0,
-        Constants.Auto.kSimpleDistAngle),
+        driveSubsystem.getWaypointPose().getX(),
+        driveSubsystem.getWaypointPose().getY(),
+        driveSubsystem.getWaypointAngle()),
       new InstantCommand(() -> cargoSubsystem.setLaunchStatus(true)),
       new WaitCommand(1.5),
-      new InstantCommand(() -> cargoSubsystem.setLaunchStatus(false))
+      new InstantCommand(() -> cargoSubsystem.setLaunchStatus(false)),
+      new DriveDistance(
+        driveSubsystem,
+        Constants.Auto.kComplexDistX,
+        Constants.Auto.kComplexDistY,
+        Constants.Auto.kComplexAngle)
     );
   }
 }

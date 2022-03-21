@@ -19,6 +19,7 @@ import frc.robot.commands.IntakeAndDump;
 import frc.robot.commands.ManualLift;
 import frc.robot.commands.ResetPose;
 import frc.robot.commands.SimpleAuto;
+import frc.robot.commands.UpdateWaypoint;
 import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeedbackSubsystem;
@@ -43,6 +44,7 @@ public class RobotContainer {
 
   private final Command m_resetPose = new ResetPose(m_drive);
   private final Command m_calibrateGyro = new CalibrateGyro(m_drive);
+  private final Command m_updateWaypoint = new UpdateWaypoint(m_drive);
   
   private final Command m_simpleAuto = new SimpleAuto(m_drive, m_cargo);
   private final Command m_dumpAndGo = new DumpAndGo(m_drive, m_cargo);
@@ -53,7 +55,8 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    m_autoChooser.setDefaultOption("Simple Auto", m_simpleAuto);
+    m_autoChooser.setDefaultOption("None", null);
+    m_autoChooser.addOption("Simple Auto", m_simpleAuto);
     m_autoChooser.addOption("Dump and Go", m_dumpAndGo);
     m_autoChooser.addOption("Intake and Dump", m_intakeDump);
     SmartDashboard.putData(m_autoChooser);
@@ -109,13 +112,16 @@ public class RobotContainer {
       whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kTurboSpd) ))
       .whenReleased(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kFastSpd) ));
 
+    /* Field centric removed for auto bandaid
     new JoystickButton(m_controller, XboxController.Button.kX.value).
       whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.EXPERIMENTAL) ));
     new JoystickButton(m_controller, XboxController.Button.kY.value).
       whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.EXPERIMENTALGYROASSIST) ));
+    */
 
     new JoystickButton(m_joystick, 8).whenPressed(m_resetPose);
     new JoystickButton(m_joystick, 10).whenPressed(m_calibrateGyro);
+    new JoystickButton(m_joystick, 12).whenPressed(m_updateWaypoint);
     
     new JoystickButton(m_joystick, 2)
       .whenPressed(new InstantCommand(() -> m_cargo.setIntakeStatus(true) ))

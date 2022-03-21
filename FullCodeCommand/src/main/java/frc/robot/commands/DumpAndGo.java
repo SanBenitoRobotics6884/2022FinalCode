@@ -25,9 +25,9 @@ public class DumpAndGo extends SequentialCommandGroup {
       new InstantCommand(() -> cargoSubsystem.setLaunchStatus(false)),
       new DriveDistance(
         driveSubsystem,
-        Constants.Auto.kSimpleDistX,
-        Constants.Auto.kSimpleDistY,
-        Constants.Auto.kSimpleDistAngle)
+        Constants.Auto.kDumpDistX,
+        Constants.Auto.kDumpDistY,
+        Constants.Auto.kDumpAngle)
     );
   }
 }
