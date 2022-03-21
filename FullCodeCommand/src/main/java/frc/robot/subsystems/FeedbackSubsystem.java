@@ -4,16 +4,12 @@
 
 package frc.robot.subsystems;
 
-import org.opencv.video.Video;
-
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -37,17 +33,18 @@ public class FeedbackSubsystem extends SubsystemBase {
     var cam1 = CameraServer.startAutomaticCapture(1);
     var cam2 = CameraServer.startAutomaticCapture(2);
 
-    cam0.setResolution(120, 120);
-    cam1.setResolution(120, 120);
-    cam2.setResolution(120, 120);
+    cam0.setResolution(25, 25);
+    cam1.setResolution(25, 25);
+    cam2.setResolution(25, 25);
 
-    cam0.setFPS(15);
-    cam1.setFPS(10);
+    cam0.setFPS(10);
+    cam1.setFPS(5);
     cam2.setFPS(30);
   }
 
   @Override
   public void periodic() {
+
     // Calculate net acceleration (all directions) and subtract acc due to gravity
     netAccelertion = Math.sqrt(Math.pow(m_gyro.getAccelX(), 2) +
       Math.pow(m_gyro.getAccelY(), 2) + Math.pow(m_gyro.getAccelZ(), 2))-9.8;
@@ -95,5 +92,9 @@ public class FeedbackSubsystem extends SubsystemBase {
         m_controller.setRumble(RumbleType.kRightRumble, 0);
       }
     }
+
+    SmartDashboard.putNumber("netAccelereation", netAccelertion);
+    SmartDashboard.putNumber("currentRatio", currentRatio);
+
   }
 }

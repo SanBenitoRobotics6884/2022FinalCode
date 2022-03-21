@@ -4,18 +4,15 @@
 
 package frc.robot;
 
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ControlScheme;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DumpAndGo;
 import frc.robot.commands.IntakeAndDump;
 import frc.robot.commands.ManualLift;

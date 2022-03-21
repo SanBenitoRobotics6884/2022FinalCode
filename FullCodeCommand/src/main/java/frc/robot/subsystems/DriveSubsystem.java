@@ -21,7 +21,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -84,6 +83,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double turnPID = 0;
   private double angleSetpoint = 0;
   private double maxDriveSpdScalar = Constants.Drive.kSlowSpd;
+  private double maxTurnSpdScalar = Constants.Drive.kDefaultTurn;
 
   public enum DriveMode{
     DEFAULT,
@@ -137,10 +137,6 @@ public class DriveSubsystem extends SubsystemBase {
     Rotation2d gyroAngle = Rotation2d.fromDegrees(-m_gyro.getAngle()); // clockwise should be negative
 
     m_pose = m_odometry.update(gyroAngle, wheelSpeeds);
-
-    SmartDashboard.putNumber("PoseX", m_pose.getX());
-    SmartDashboard.putNumber("PoseY", m_pose.getY());
-    SmartDashboard.putNumber("Angle", m_gyro.getAngle());
   }
 
   @Override
@@ -149,9 +145,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void drive(double forw, double strafe, double rot) {
     double yspeed = -inputProcess(forw, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, false);
     double xspeed = inputProcess(strafe, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, false);
-    double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
-
-    SmartDashboard.putNumber("Angle Target", angleSetpoint);
+    double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true) * maxTurnSpdScalar;
 
     if (mode == DriveMode.GYRO_ASSIST || mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
       turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
@@ -257,6 +251,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public  void setMaxSpeed(double speed) {
     maxDriveSpdScalar = speed;
+  }
+
+  public  void setMaxTurn(double turn) {
+    maxTurnSpdScalar = turn;
   }
 
   public double getMaxSpeed(double speed) {

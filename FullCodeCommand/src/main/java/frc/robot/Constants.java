@@ -58,9 +58,11 @@ public final class Constants {
         public static final double kSlowSpd = 0.3;
         public static final double kFastSpd = 0.6;
         public static final double kTurboSpd = 0.9;
+        public static final double kDefaultTurn = 1;
+        public static final double kPreciseTurn = 0.5;
         public static final double kdrivedeadband = 0.1;
         public static final double kMaxTurn = 720;
-        public static final ControlScheme scheme = ControlScheme.LSTICKTRANSLATE;
+        public static final ControlScheme scheme = ControlScheme.TRIGGERSTRAFE;
 
     }
 
