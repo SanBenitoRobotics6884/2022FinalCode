@@ -7,17 +7,17 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class ResetPose extends CommandBase {
+public class CalibrateGyro extends CommandBase {
 
   private DriveSubsystem m_drive;
 
-  public ResetPose(DriveSubsystem driveSubsystem) {
+  public CalibrateGyro(DriveSubsystem driveSubsystem) {
     m_drive = driveSubsystem;
   }
 
   @Override
   public void initialize() {
-    m_drive.resetPose();
+    m_drive.calibrateGyro();
   }
 
   @Override

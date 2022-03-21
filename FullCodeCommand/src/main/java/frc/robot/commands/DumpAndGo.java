@@ -20,7 +20,6 @@ public class DumpAndGo extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new InstantCommand(() -> driveSubsystem.resetPose()),
       new InstantCommand(() -> cargoSubsystem.setLaunchStatus(true)),
       new WaitCommand(1.5),
       new InstantCommand(() -> cargoSubsystem.setLaunchStatus(false)),

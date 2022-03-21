@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ControlScheme;
+import frc.robot.commands.CalibrateGyro;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DumpAndGo;
 import frc.robot.commands.IntakeAndDump;
@@ -41,6 +42,7 @@ public class RobotContainer {
   private final FeedbackSubsystem m_feedback = new FeedbackSubsystem(m_gyro, m_pdh, m_controller);
 
   private final Command m_resetPose = new ResetPose(m_drive);
+  private final Command m_calibrateGyro = new CalibrateGyro(m_drive);
   
   private final Command m_simpleAuto = new SimpleAuto(m_drive, m_cargo);
   private final Command m_dumpAndGo = new DumpAndGo(m_drive, m_cargo);
@@ -112,7 +114,8 @@ public class RobotContainer {
     new JoystickButton(m_controller, XboxController.Button.kY.value).
       whenPressed(new InstantCommand(() -> m_drive.setDriveMode(DriveMode.EXPERIMENTALGYROASSIST) ));
 
-    new JoystickButton(m_joystick, 10).whenPressed(m_resetPose);
+    new JoystickButton(m_joystick, 8).whenPressed(m_resetPose);
+    new JoystickButton(m_joystick, 10).whenPressed(m_calibrateGyro);
     
     new JoystickButton(m_joystick, 2)
       .whenPressed(new InstantCommand(() -> m_cargo.setIntakeStatus(true) ))
@@ -134,7 +137,7 @@ public class RobotContainer {
       .whenPressed(new InstantCommand(() -> m_lift.setRightArmStatus(true) ))
       .whenReleased(new InstantCommand(() -> m_lift.setRightArmStatus(false) ));
 
-    new JoystickButton(m_joystick, 12)
+    new JoystickButton(m_joystick, 11)
       .whenPressed(new InstantCommand(() -> m_lift.disengageRatchets() ));
   }
 
