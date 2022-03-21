@@ -30,16 +30,16 @@ public final class Constants {
             public static final double kF = 0.01;
             public static final double kMaxVelRot = 420;
             public static final double kMaxAccRot = 1440;
-            public static final double kAllowedError = 2;
+            public static final double kAllowedError = 4;
         }
 
         public final class PositionPID {
-            public static final double kP = 1;
+            public static final double kP = 0.8;
             public static final double kI = 0;
             public static final double kD = 0.0;
             public static final double kF = 0.025;
-            public static final double kMaxVel = 0.5;
-            public static final double kMaxAcc = 0.5;
+            public static final double kMaxVel = 1;
+            public static final double kMaxAcc = 1;
             public static final double kAllowedError = 0.02;
         }
 
@@ -99,9 +99,9 @@ public final class Constants {
         public static final double kMaxVoltageRight = 4;
         public static final double kRatchedEngage = 0;
         public static final double kLeftRatchetDisengage = -0.5;
-        public static final double kRightRatchedDisengage = -0.5;
+        public static final double kRightRatchedDisengage = -0.6;
         public static final double kRatchetDelay = 3;
-        public static final double kMaxHeight = 57; //encoder counts
+        public static final double kMaxHeight = 54; //encoder counts
 
         public static final int kSmartMotionSlot = 0;
         public static final int kLeftLiftID = 8;

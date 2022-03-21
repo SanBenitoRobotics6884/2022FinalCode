@@ -238,7 +238,6 @@ public class DriveSubsystem extends SubsystemBase {
     System.out.println(Math.abs(xTarget - m_pose.getX()));
     
     if (atY && atX && atZ) {
-      System.out.println("HIODFSHIOFSDHIOSDF");
       drive(0,0,0);
       return true;
     }
