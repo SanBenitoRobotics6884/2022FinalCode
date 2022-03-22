@@ -99,7 +99,7 @@ public class LiftSubsystem extends SubsystemBase {
 
   public void openLoopLift(double speed) {
 
-    speed = 0; // DELETE
+    //speed = 0; // DELETE
 
     //Deadband
     if (Math.abs(speed) < 0.1) {

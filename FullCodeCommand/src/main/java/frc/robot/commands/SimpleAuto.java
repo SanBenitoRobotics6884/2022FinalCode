@@ -22,7 +22,7 @@ public class SimpleAuto extends SequentialCommandGroup {
         driveSubsystem,
         Constants.Auto.kSimpleDistX,
         Constants.Auto.kSimpleDistY,
-        Constants.Auto.kSimpleDistAngle)
+        Constants.Auto.kSimpleAngle)
     );
   }
 }

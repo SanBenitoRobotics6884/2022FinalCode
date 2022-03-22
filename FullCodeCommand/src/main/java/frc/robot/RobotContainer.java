@@ -122,6 +122,8 @@ public class RobotContainer {
     new JoystickButton(m_joystick, 8).whenPressed(m_resetPose);
     new JoystickButton(m_joystick, 10).whenPressed(m_calibrateGyro);
     new JoystickButton(m_joystick, 12).whenPressed(m_updateWaypoint);
+
+    //new JoystickButton(m_joystick, 9).whenPressed(() -> m_drive.getWaypointPose());
     
     new JoystickButton(m_joystick, 2)
       .whenPressed(new InstantCommand(() -> m_cargo.setIntakeStatus(true) ))

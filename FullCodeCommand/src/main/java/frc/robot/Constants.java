@@ -123,15 +123,15 @@ public final class Constants {
 
     public static final class Auto {
         public static final double kSimpleDistY = 0; // Positive = Left
-        public static final double kSimpleDistX = 1.5; // Positive = Forw
+        public static final double kSimpleDistX = 0.5; // Positive = Forw
         public static final double kSimpleAngle = 0;
         
         public static final double kDumpDistY = 0; // Positive = Left
-        public static final double kDumpDistX = 1.5; // Positive = Forw
+        public static final double kDumpDistX = 0.5; // Positive = Forw
         public static final double kDumpAngle = 0;
 
         public static final double kComplexDistY = 0; // Positive = Left
-        public static final double kComplexDistX = 1.5; // Positive = Forw
+        public static final double kComplexDistX = 0.5; // Positive = Forw
         public static final double kComplexAngle = 0;
     }
 

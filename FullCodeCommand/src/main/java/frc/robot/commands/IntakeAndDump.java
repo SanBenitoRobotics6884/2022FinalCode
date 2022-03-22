@@ -4,10 +4,12 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.Constants.Drive;
 import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -15,23 +17,27 @@ import frc.robot.subsystems.DriveSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class IntakeAndDump extends SequentialCommandGroup {
+
+  DriveSubsystem m_drive;
   /** Creates a new DumpAndGo. */
   public IntakeAndDump(DriveSubsystem driveSubsystem, CargoSubsystem cargoSubsystem) {
+    m_drive = driveSubsystem;
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+
       new InstantCommand(() -> cargoSubsystem.setIntakeStatus(true)),
       new DriveDistance(
         driveSubsystem,
         Constants.Auto.kComplexDistX,
         Constants.Auto.kComplexDistY,
         Constants.Auto.kComplexAngle),
-      new InstantCommand(() -> cargoSubsystem.setIntakeStatus(false)),
+        new InstantCommand(() -> cargoSubsystem.setIntakeStatus(false)),
       new DriveDistance(
         driveSubsystem,
-        driveSubsystem.getWaypointPose().getX(),
-        driveSubsystem.getWaypointPose().getY(),
-        driveSubsystem.getWaypointAngle()),
+        m_drive.m_waypointPose.getX(),
+        m_drive.m_waypointPose.getY(),
+        m_drive.m_waypointAngle),
       new InstantCommand(() -> cargoSubsystem.setLaunchStatus(true)),
       new WaitCommand(1.5),
       new InstantCommand(() -> cargoSubsystem.setLaunchStatus(false)),

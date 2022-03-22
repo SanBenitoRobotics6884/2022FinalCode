@@ -35,8 +35,8 @@ public class DriveSubsystem extends SubsystemBase {
   
   private MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
   private Pose2d m_pose = new Pose2d();
-  private Pose2d m_waypointPose = new Pose2d();
-  private double m_waypointAngle = 0;
+  public Pose2d m_waypointPose = new Pose2d();
+  public double m_waypointAngle = 0;
 
   private CANSparkMax m_leftFront = new CANSparkMax(Constants.Drive.kLeftFrontMotor, MotorType.kBrushless);
   private CANSparkMax m_rightFront = new CANSparkMax(Constants.Drive.kRightFrontMotor, MotorType.kBrushless);
@@ -139,6 +139,12 @@ public class DriveSubsystem extends SubsystemBase {
     Rotation2d gyroAngle = Rotation2d.fromDegrees(-m_gyro.getAngle()); // clockwise should be negative
 
     m_pose = m_odometry.update(gyroAngle, wheelSpeeds);
+
+    SmartDashboard.putNumber("Pose X", m_pose.getX());
+    SmartDashboard.putNumber("Pose Y", m_pose.getY());
+    SmartDashboard.putNumber("Waypoint X", m_waypointPose.getX());
+    SmartDashboard.putNumber("Waypoint Y", m_waypointPose.getY());
+    SmartDashboard.putNumber("Angle", m_gyro.getAngle());
   }
 
   @Override
@@ -237,7 +243,6 @@ public class DriveSubsystem extends SubsystemBase {
     boolean atY = Math.abs(yTarget - m_pose.getY()) < Constants.Drive.PositionPID.kAllowedError;
     boolean atX = Math.abs(xTarget - m_pose.getX()) < Constants.Drive.PositionPID.kAllowedError;
     boolean atZ = Math.abs(angleTarget - m_gyro.getAngle()) < Constants.Drive.AbsoluteAnglePID.kAllowedError;
-    System.out.println(Math.abs(xTarget - m_pose.getX()));
     
     if (atY && atX && atZ) {
       drive(0,0,0);
@@ -267,8 +272,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetPose() {
-    m_pose = new Pose2d();
+    if (DriverStation.isDisabled()) {
+      m_odometry.resetPosition(new Pose2d(), new Rotation2d());
+    }
   }
+  
 
   public void setWaypoint() {
     m_waypointPose = m_pose;
@@ -276,6 +284,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getWaypointPose() {
+    System.out.println("Test");
     return m_waypointPose;
   }
   
