@@ -33,11 +33,7 @@ public class IntakeAndDump extends SequentialCommandGroup {
         Constants.Auto.kComplexDistY,
         Constants.Auto.kComplexAngle),
         new InstantCommand(() -> cargoSubsystem.setIntakeStatus(false)),
-      new DriveDistance(
-        driveSubsystem,
-        m_drive.m_waypointPose.getX(),
-        m_drive.m_waypointPose.getY(),
-        m_drive.m_waypointAngle),
+      new DriveDistance(driveSubsystem), //Waypoint mode
       new InstantCommand(() -> cargoSubsystem.setLaunchStatus(true)),
       new WaitCommand(1.5),
       new InstantCommand(() -> cargoSubsystem.setLaunchStatus(false)),
