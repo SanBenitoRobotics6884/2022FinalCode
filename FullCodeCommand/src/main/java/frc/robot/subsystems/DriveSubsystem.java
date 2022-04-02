@@ -169,7 +169,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     yspeed = m_yLimiter.calculate(yspeed);
-    xspeed = m_xLimiter.calculate(xspeed);
+    //xspeed = m_xLimiter.calculate(xspeed);
+    if (maxDriveSpdScalar >= Constants.Drive.kFastSpd) {
+      xspeed *= Constants.Drive.kAdditionalFastStrafeMultiplier;
+    }
 
     if (mode == DriveMode.DEFAULT) {
       m_drive.driveCartesian(yspeed, xspeed, zrot);

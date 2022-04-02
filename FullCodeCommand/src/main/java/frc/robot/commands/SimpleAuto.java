@@ -18,11 +18,13 @@ public class SimpleAuto extends SequentialCommandGroup {
   /** Creates a new DumpAndGo. */
   public SimpleAuto(DriveSubsystem driveSubsystem, CargoSubsystem cargoSubsystem) {
     addCommands(
+      new InstantCommand(() -> cargoSubsystem.setIntakeStatus(true)),
       new DriveDistance(
         driveSubsystem,
         Constants.Auto.kSimpleDistX,
         Constants.Auto.kSimpleDistY,
-        Constants.Auto.kSimpleAngle)
+        Constants.Auto.kSimpleAngle),
+        new InstantCommand(() -> cargoSubsystem.setIntakeStatus(false))
     );
   }
 }

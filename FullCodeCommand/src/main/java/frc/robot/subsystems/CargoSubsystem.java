@@ -43,7 +43,7 @@ public class CargoSubsystem extends SubsystemBase {
 
     if (isLaunching ) {
       m_upperStorageMotor.set(ControlMode.PercentOutput, Constants.Cargo.kLaunchSpd);
-      m_lowerStorageMotor.set(Constants.Cargo.kLaunchSpd);
+      m_lowerStorageMotor.set(Constants.Cargo.kLwrMtrSpd);
     } else {
       m_upperStorageMotor.set(ControlMode.PercentOutput, 0);
     }

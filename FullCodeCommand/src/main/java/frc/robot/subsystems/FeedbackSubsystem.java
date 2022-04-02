@@ -31,15 +31,15 @@ public class FeedbackSubsystem extends SubsystemBase {
 
     var cam0 = CameraServer.startAutomaticCapture(0);
     var cam1 = CameraServer.startAutomaticCapture(1);
-    var cam2 = CameraServer.startAutomaticCapture(2);
+    //var cam2 = CameraServer.startAutomaticCapture(2);
 
     cam0.setResolution(25, 25);
     cam1.setResolution(25, 25);
-    cam2.setResolution(25, 25);
+    //cam2.setResolution(25, 25);
 
-    cam0.setFPS(10);
-    cam1.setFPS(5);
-    cam2.setFPS(30);
+    cam0.setFPS(30);
+    cam1.setFPS(30);
+    //cam2.setFPS(30);
   }
 
   @Override

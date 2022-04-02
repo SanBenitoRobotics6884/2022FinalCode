@@ -54,23 +54,24 @@ public final class Constants {
         public static final int kRightBackMotor = 4;
 
         public static final double kConversionFactor = 0.028;
-        public static final double kRateLimit = 1.5;
+        public static final double kRateLimit = 2.0;
         public static final double kSlowSpd = 0.3;
         public static final double kFastSpd = 0.6;
-        public static final double kTurboSpd = 0.9;
-        public static final double kDefaultTurn = 1;
-        public static final double kPreciseTurn = 0.5;
+        public static final double kTurboSpd = 1.0;
+        public static final double kDefaultTurn = 0.5;
+        public static final double kPreciseTurn = 0.3;
         public static final double kdrivedeadband = 0.1;
         public static final double kMaxTurn = 720;
+        public static final double kAdditionalFastStrafeMultiplier = 2;
         public static final ControlScheme scheme = ControlScheme.TRIGGERSTRAFE;
 
     }
 
     public static final class Cargo {
         public static final double kLwrStorageDelay = 3;
-        public static final double kIntkVltge = 6;
+        public static final double kIntkVltge = 9;
         public static final double kLaunchSpd = 1.0;
-        public static final double kLwrMtrSpd = 0.6;
+        public static final double kLwrMtrSpd = 0.5;
 
         public static final int kIntakeID = 6;
         public static final int kLowerStorageID = 5;
@@ -95,13 +96,13 @@ public final class Constants {
         public static final boolean isDynamicKF = false; //EXPERIMENTAL. USE WITH CAUTION
         public static final double kLowSetpoint = 0; //Units: motor rotations
         public static final double kHighSetpoint = 20; //Units: motor rotations
-        public static final double kMaxVoltageLeft = 4;
-        public static final double kMaxVoltageRight = 4;
-        public static final double kRatchedEngage = 0;
-        public static final double kLeftRatchetDisengage = -0.5;
-        public static final double kRightRatchedDisengage = -0.6;
+        public static final double kMaxVoltageLeft = 8;
+        public static final double kMaxVoltageRight = 8;
+        public static final double kRatchedEngage = -1;
+        public static final double kLeftRatchetDisengage = -1;
+        public static final double kRightRatchedDisengage = -1;
         public static final double kRatchetDelay = 3;
-        public static final double kMaxHeight = 54; //encoder counts
+        public static final double kMaxHeight = 68; //encoder counts
 
         public static final int kSmartMotionSlot = 0;
         public static final int kLeftLiftID = 8;
@@ -123,15 +124,15 @@ public final class Constants {
 
     public static final class Auto {
         public static final double kSimpleDistY = 0; // Positive = Left
-        public static final double kSimpleDistX = 0.5; // Positive = Forw
+        public static final double kSimpleDistX = 2.0; // Positive = Forw
         public static final double kSimpleAngle = 0;
         
         public static final double kDumpDistY = 0; // Positive = Left
-        public static final double kDumpDistX = 0.5; // Positive = Forw
+        public static final double kDumpDistX = 2.2; // Positive = Forw
         public static final double kDumpAngle = 0;
 
         public static final double kComplexDistY = 0; // Positive = Left
-        public static final double kComplexDistX = 0.5; // Positive = Forw
+        public static final double kComplexDistX = 2.0; // Positive = Forw
         public static final double kComplexAngle = 0;
     }
 

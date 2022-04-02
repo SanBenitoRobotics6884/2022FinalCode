@@ -42,7 +42,7 @@ public class DriveDistance extends CommandBase {
   public void initialize() {
     if (waypointMode) {
       Pose2d waypointPose = m_drive.getWaypointPose();
-      m_drive.setPositionTarget(waypointPose.getX(), waypointPose.getY(), m_drive.getWaypointAngle());
+      m_drive.setPositionTarget(waypointPose.getY(), waypointPose.getX(), m_drive.getWaypointAngle());
     } else {
       m_drive.setPositionTarget(m_distY, m_distX, m_rot);
     }
