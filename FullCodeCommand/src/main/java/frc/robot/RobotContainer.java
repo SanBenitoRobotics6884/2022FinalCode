@@ -66,33 +66,12 @@ public class RobotContainer {
 
     configureButtonBindings();
 
-    if (Constants.Drive.scheme == ControlScheme.LSTICKTRANSLATE) {
-      m_drive.setDefaultCommand(new DefaultDrive(m_drive,
-        () -> m_controller.getLeftY(),
-        () -> m_controller.getLeftX(),
-        () -> m_controller.getRightX())
-      );
-    } else if (Constants.Drive.scheme == ControlScheme.TRIGGERSTRAFE) {
-      m_drive.setDefaultCommand(new DefaultDrive(m_drive,
-        () -> m_controller.getLeftY(),
-        () -> m_controller.getRightTriggerAxis() - m_controller.getLeftTriggerAxis(),
-        () -> m_controller.getRightX())
-      );
-    } else if (Constants.Drive.scheme == ControlScheme.RSTICKTRANSLATE) {
-      m_drive.setDefaultCommand(new DefaultDrive(m_drive,
-        () -> m_controller.getRightY(),
-        () -> m_controller.getRightX(),
-        () -> m_controller.getLeftX())
-      );
-    } else if (Constants.Drive.scheme == ControlScheme.TRIGGERSTRAFEINVERT) {
-      m_drive.setDefaultCommand(new DefaultDrive(m_drive,
-        () -> m_controller.getRightY(),
-        () -> m_controller.getRightTriggerAxis() - m_controller.getLeftTriggerAxis(),
-        () -> m_controller.getLeftX())
-      );
-    }
-
-    
+ 
+    m_drive.setDefaultCommand(new DefaultDrive(m_drive,
+      () -> m_controller.getLeftY(),
+      () -> m_controller.getRightTriggerAxis() - m_controller.getLeftTriggerAxis(),
+      () -> m_controller.getRightX())
+    );
 
     m_lift.setDefaultCommand(new ManualLift(m_lift, () -> m_joystick.getY() ));
   }
