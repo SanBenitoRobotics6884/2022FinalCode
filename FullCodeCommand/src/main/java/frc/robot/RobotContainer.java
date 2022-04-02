@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.ControlScheme;
 import frc.robot.commands.CalibrateGyro;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DumpAndGo;
@@ -24,7 +23,6 @@ import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeedbackSubsystem;
 import frc.robot.subsystems.LiftSubsystem;
-import frc.robot.subsystems.DriveSubsystem.DriveMode;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -123,9 +121,6 @@ public class RobotContainer {
     new JoystickButton(m_joystick, 4)
       .whenPressed(new InstantCommand(() -> m_lift.setRightArmStatus(true) ))
       .whenReleased(new InstantCommand(() -> m_lift.setRightArmStatus(false) ));
-
-    new JoystickButton(m_joystick, 11)
-      .whenPressed(new InstantCommand(() -> m_lift.disengageRatchets() ));
   }
 
   public Command getAutonomousCommand() {

@@ -63,12 +63,10 @@ public final class Constants {
         public static final double kdrivedeadband = 0.1;
         public static final double kMaxTurn = 720;
         public static final double kAdditionalFastStrafeMultiplier = 2;
-        public static final ControlScheme scheme = ControlScheme.TRIGGERSTRAFE;
 
     }
 
     public static final class Cargo {
-        public static final double kLwrStorageDelay = 3;
         public static final double kIntkVltge = 9;
         public static final double kLaunchSpd = 1.0;
         public static final double kLwrMtrSpd = 0.5;
@@ -79,36 +77,13 @@ public final class Constants {
     }
 
     public static final class Lift {
-        public final class LiftPID {
-            public static final double kPlift = 0.00015;
-            public static final double kIlift = 0;
-            public static final double kDlift = 0;
-            public static final double kFUnloadedLift = 0;
-            public static final double kFLoadedLift = 0.0004;
-            public static final double kMinOutputLift = -1;
-            public static final double kMaxOutputLift = 1;
-            public static final double kMaxVelLift = 2000; // rpm
-            public static final double kMaxAccLift = 1500;
-            public static final double kAllowedErrLift = 0;
-        }
-
-        public static final boolean isPid = false; //Run in PID mode instead of direct control (open loop)
-        public static final boolean isDynamicKF = false; //EXPERIMENTAL. USE WITH CAUTION
-        public static final double kLowSetpoint = 0; //Units: motor rotations
-        public static final double kHighSetpoint = 20; //Units: motor rotations
         public static final double kMaxVoltageLeft = 8;
         public static final double kMaxVoltageRight = 8;
-        public static final double kRatchedEngage = -1;
-        public static final double kLeftRatchetDisengage = -1;
-        public static final double kRightRatchedDisengage = -1;
-        public static final double kRatchetDelay = 3;
         public static final double kMaxHeight = 68; //encoder counts
 
         public static final int kSmartMotionSlot = 0;
         public static final int kLeftLiftID = 8;
         public static final int kRightLiftID = 9;
-        public static final int kLeftServoPort = 0;
-        public static final int kRightServoPort = 1;
         public static final int kLeftLimitPort = 8;
         public static final int kRightLimitPort = 9;
     }
@@ -136,10 +111,4 @@ public final class Constants {
         public static final double kComplexAngle = 0;
     }
 
-    public enum ControlScheme {
-        LSTICKTRANSLATE,
-        RSTICKTRANSLATE,
-        TRIGGERSTRAFE,
-        TRIGGERSTRAFEINVERT
-    }
 }
