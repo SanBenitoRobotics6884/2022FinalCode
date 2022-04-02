@@ -11,13 +11,13 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.AutoCommands.DumpAndGo;
+import frc.robot.AutoCommands.IntakeAndDump;
+import frc.robot.AutoCommands.SimpleAuto;
 import frc.robot.commands.CalibrateGyro;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DumpAndGo;
-import frc.robot.commands.IntakeAndDump;
 import frc.robot.commands.ManualLift;
 import frc.robot.commands.ResetPose;
-import frc.robot.commands.SimpleAuto;
 import frc.robot.commands.UpdateWaypoint;
 import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -99,8 +99,6 @@ public class RobotContainer {
     new JoystickButton(m_joystick, 8).whenPressed(m_resetPose);
     new JoystickButton(m_joystick, 10).whenPressed(m_calibrateGyro);
     new JoystickButton(m_joystick, 12).whenPressed(m_updateWaypoint);
-
-    //new JoystickButton(m_joystick, 9).whenPressed(() -> m_drive.getWaypointPose());
     
     new JoystickButton(m_joystick, 2)
       .whenPressed(new InstantCommand(() -> m_cargo.setIntakeStatus(true) ))
