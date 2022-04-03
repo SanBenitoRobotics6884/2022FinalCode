@@ -35,8 +35,6 @@ public class DriveSubsystem extends SubsystemBase {
   
   private MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
   private Pose2d m_pose = new Pose2d();
-  public Pose2d m_waypointPose = new Pose2d();
-  public double m_waypointAngle = 0;
 
   private CANSparkMax m_leftFront = new CANSparkMax(Constants.Drive.kLeftFrontMotor, MotorType.kBrushless);
   private CANSparkMax m_rightFront = new CANSparkMax(Constants.Drive.kRightFrontMotor, MotorType.kBrushless);
@@ -85,7 +83,6 @@ public class DriveSubsystem extends SubsystemBase {
   private double turnPID = 0;
   private double angleSetpoint = 0;
   private double maxDriveSpdScalar = Constants.Drive.kSlowSpd;
-  private double maxTurnSpdScalar = Constants.Drive.kDefaultTurn;
 
   public enum DriveMode{
     DEFAULT,
@@ -142,8 +139,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Pose X", m_pose.getX());
     SmartDashboard.putNumber("Pose Y", m_pose.getY());
-    SmartDashboard.putNumber("Waypoint X", m_waypointPose.getX());
-    SmartDashboard.putNumber("Waypoint Y", m_waypointPose.getY());
     SmartDashboard.putNumber("Angle", m_gyro.getAngle());
   }
 
@@ -153,7 +148,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void drive(double forw, double strafe, double rot) {
     double yspeed = -inputProcess(forw, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, false);
     double xspeed = inputProcess(strafe, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, false);
-    double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true) * maxTurnSpdScalar;
+    double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
 
     if (mode == DriveMode.GYRO_ASSIST || mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
       turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
@@ -163,13 +158,12 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     if (turnPID > 0) {
-      turnPID -= Constants.Drive.TurnRatePID.kF;
+      turnPID += Constants.Drive.kFTurn;
     } else if (turnPID < 0) {
-      turnPID += Constants.Drive.TurnRatePID.kF;
+      turnPID -= Constants.Drive.kFTurn;
     }
 
     yspeed = m_yLimiter.calculate(yspeed);
-    //xspeed = m_xLimiter.calculate(xspeed);
     if (maxDriveSpdScalar >= Constants.Drive.kFastSpd) {
       xspeed *= Constants.Drive.kAdditionalFastStrafeMultiplier;
     }
@@ -262,9 +256,6 @@ public class DriveSubsystem extends SubsystemBase {
     maxDriveSpdScalar = speed;
   }
 
-  public  void setMaxTurn(double turn) {
-    maxTurnSpdScalar = turn;
-  }
 
   public double getMaxSpeed(double speed) {
     return maxDriveSpdScalar;
@@ -278,21 +269,6 @@ public class DriveSubsystem extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       m_odometry.resetPosition(new Pose2d(), new Rotation2d());
     }
-  }
-  
-
-  public void setWaypoint() {
-    m_waypointPose = m_pose;
-    m_waypointAngle = m_gyro.getAngle();
-  }
-
-  public Pose2d getWaypointPose() {
-    System.out.println("Test");
-    return m_waypointPose;
-  }
-  
-  public double getWaypointAngle() {
-    return m_waypointAngle;
   }
 
 }

@@ -18,7 +18,6 @@ import frc.robot.commands.CalibrateGyro;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.ManualLift;
 import frc.robot.commands.ResetPose;
-import frc.robot.commands.UpdateWaypoint;
 import frc.robot.subsystems.CargoSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeedbackSubsystem;
@@ -42,7 +41,6 @@ public class RobotContainer {
 
   private final Command m_resetPose = new ResetPose(m_drive);
   private final Command m_calibrateGyro = new CalibrateGyro(m_drive);
-  private final Command m_updateWaypoint = new UpdateWaypoint(m_drive);
   
   private final Command m_simpleAuto = new SimpleAuto(m_drive, m_cargo);
   private final Command m_dumpAndGo = new DumpAndGo(m_drive, m_cargo);

@@ -6,9 +6,6 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.DriveSubsystem;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -18,7 +15,6 @@ public class DriveDistance extends CommandBase {
   private final DriveSubsystem m_drive;
 
   double m_distX, m_distY, m_rot;
-  boolean waypointMode = false;
 
   public DriveDistance(DriveSubsystem subsystem, double distX, double distY, double rot) {
     m_distX = distX;
@@ -28,24 +24,12 @@ public class DriveDistance extends CommandBase {
     m_drive = subsystem;
     addRequirements(m_drive);
   }
-
-  public DriveDistance(DriveSubsystem subsystem) {
-    waypointMode = true;
-
-    m_drive = subsystem;
-    addRequirements(m_drive);
-  }
   
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (waypointMode) {
-      Pose2d waypointPose = m_drive.getWaypointPose();
-      m_drive.setPositionTarget(waypointPose.getY(), waypointPose.getX(), m_drive.getWaypointAngle());
-    } else {
-      m_drive.setPositionTarget(m_distY, m_distX, m_rot);
-    }
+    m_drive.setPositionTarget(m_distY, m_distX, m_rot);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

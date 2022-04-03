@@ -20,7 +20,6 @@ public final class Constants {
             public static final double kP = 0.002;
             public static final double kI = 0;
             public static final double kD = 0.0;
-            public static final double kF = 0.0;
         }
 
         public final class AbsoluteAnglePID {
@@ -42,6 +41,8 @@ public final class Constants {
             public static final double kMaxAcc = 1;
             public static final double kAllowedError = 0.02;
         }
+
+        public static final double kFTurn = 0;
 
         public static final Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
         public static final Translation2d m_frontRightLocation = new Translation2d(0.254, -0.254);
