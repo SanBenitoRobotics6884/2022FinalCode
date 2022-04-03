@@ -38,7 +38,7 @@ public class RobotContainer {
   private final DriveSubsystem m_drive = new DriveSubsystem(m_gyro);
   private final CargoSubsystem m_cargo = new CargoSubsystem();
   private final LiftSubsystem m_lift = new LiftSubsystem();
-  private final FeedbackSubsystem m_feedback = new FeedbackSubsystem(m_gyro, m_pdh, m_controller);
+  private final FeedbackSubsystem m_feedback = new FeedbackSubsystem(m_gyro, m_pdh, m_controller, m_cargo);
 
   private final Command m_resetPose = new ResetPose(m_drive);
   private final Command m_calibrateGyro = new CalibrateGyro(m_drive);
@@ -98,7 +98,6 @@ public class RobotContainer {
 
     new JoystickButton(m_joystick, 8).whenPressed(m_resetPose);
     new JoystickButton(m_joystick, 10).whenPressed(m_calibrateGyro);
-    new JoystickButton(m_joystick, 12).whenPressed(m_updateWaypoint);
     
     new JoystickButton(m_joystick, 2)
       .whenPressed(new InstantCommand(() -> m_cargo.setIntakeStatus(true) ))
