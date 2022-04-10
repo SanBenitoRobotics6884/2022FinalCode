@@ -62,14 +62,14 @@ public final class Constants {
         public static final double kDefaultTurn = 0.5;
         public static final double kPreciseTurn = 0.3;
         public static final double kdrivedeadband = 0.1;
-        public static final double kMaxTurn = 720;
+        public static final double kMaxTurn = 540;
         public static final double kAdditionalFastStrafeMultiplier = 2;
 
     }
 
     public static final class Cargo {
         public static final double kIntkVltge = 9;
-        public static final double kLaunchSpd = 1.0;
+        public static final double kLaunchSpd = 0.9;
         public static final double kLwrMtrSpd = 0.5;
 
         public static final int kIntakeID = 6;
@@ -78,9 +78,9 @@ public final class Constants {
     }
 
     public static final class Lift {
-        public static final double kMaxVoltageLeft = 8;
-        public static final double kMaxVoltageRight = 8;
-        public static final double kMaxHeight = 68; //encoder counts
+        public static final double kMaxVoltageLeft = 9.5;
+        public static final double kMaxVoltageRight = 12;
+        public static final double kMaxHeight = 340; //encoder counts
 
         public static final int kSmartMotionSlot = 0;
         public static final int kLeftLiftID = 8;

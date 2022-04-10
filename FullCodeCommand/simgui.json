@@ -75,7 +75,8 @@
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/Victor SPX [5]": "Motor Controller",
-      "/LiveWindow/Ungrouped/Victor SPX [7]": "Motor Controller"
+      "/LiveWindow/Ungrouped/Victor SPX [7]": "Motor Controller",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser"
     }
   }
 }

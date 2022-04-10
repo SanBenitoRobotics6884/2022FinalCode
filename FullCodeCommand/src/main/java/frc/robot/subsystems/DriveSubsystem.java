@@ -83,6 +83,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double turnPID = 0;
   private double angleSetpoint = 0;
   private double maxDriveSpdScalar = Constants.Drive.kSlowSpd;
+  private double maxTurnSpdScalar = Constants.Drive.kDefaultTurn;
 
   public enum DriveMode{
     DEFAULT,
@@ -93,7 +94,7 @@ public class DriveSubsystem extends SubsystemBase {
     EXPERIMENTALGYROASSIST
   }
 
-  private DriveMode mode = DriveMode.EXPERIMENTAL;
+  private DriveMode mode = DriveMode.GYRO_ASSIST;
 
   /** Creates a new ExampleSubsystem. */
   public DriveSubsystem(ADIS16470_IMU gyro) {
@@ -148,7 +149,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void drive(double forw, double strafe, double rot) {
     double yspeed = -inputProcess(forw, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, false);
     double xspeed = inputProcess(strafe, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, false);
-    double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxDriveSpdScalar, true);
+    double zrot = inputProcess(rot, Constants.Drive.kdrivedeadband, maxTurnSpdScalar, false);
 
     if (mode == DriveMode.GYRO_ASSIST || mode == DriveMode.GYRO_ASSIST_FIELD_CENTER) {
       turnPID = m_TurnPID.calculate(m_gyro.getRate(), zrot * Constants.Drive.kMaxTurn);
@@ -252,8 +253,11 @@ public class DriveSubsystem extends SubsystemBase {
     return mode;
   }
 
-  public  void setMaxSpeed(double speed) {
-    maxDriveSpdScalar = speed;
+  public  void setMaxDriveSpeed(double driveSpeed) {
+    maxDriveSpdScalar = driveSpeed;
+  }
+  public  void setMaxTurnSpeed(double turnSpeed) {
+    maxTurnSpdScalar = turnSpeed;
   }
 
 
@@ -263,6 +267,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Pose2d getRobotPose() {
     return m_pose;
+  }
+
+  public double getRobotAngle() {
+    return m_gyro.getAngle();
   }
 
   public void resetPose() {

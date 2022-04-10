@@ -96,6 +96,13 @@ public class LiftSubsystem extends SubsystemBase {
       m_leftLiftMtr.setVoltage(0);
     }
 
+    // if (speed == 0 && m_rightLimit.get()) {
+    //   m_rightLiftMtr.setVoltage(-1);
+    // }
+    // if (speed == 0 && m_leftLimit.get()) {
+    //   m_leftLiftMtr.setVoltage(-1);
+    // }
+
     prevLiftSpeed = speed;
 
   }

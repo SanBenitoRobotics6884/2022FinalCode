@@ -80,12 +80,17 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value).
-      whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kSlowSpd) ));
+      whenPressed(new InstantCommand(() -> m_drive.setMaxDriveSpeed(Constants.Drive.kSlowSpd) ));
     new JoystickButton(m_controller, XboxController.Button.kRightBumper.value).
-      whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kFastSpd) ));
+      whenPressed(new InstantCommand(() -> m_drive.setMaxDriveSpeed(Constants.Drive.kFastSpd) ));
     new JoystickButton(m_controller, XboxController.Button.kLeftStick.value).
-      whenPressed(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kTurboSpd) ))
-      .whenReleased(new InstantCommand(() -> m_drive.setMaxSpeed(Constants.Drive.kFastSpd) ));
+      whenPressed(new InstantCommand(() -> m_drive.setMaxDriveSpeed(Constants.Drive.kTurboSpd) ))
+      .whenReleased(new InstantCommand(() -> m_drive.setMaxDriveSpeed(Constants.Drive.kFastSpd) ));
+
+    new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value).
+      whenPressed(new InstantCommand(() -> m_drive.setMaxTurnSpeed(0.5) ));  
+    new JoystickButton(m_controller, XboxController.Button.kRightBumper.value).
+    whenPressed(new InstantCommand(() -> m_drive.setMaxTurnSpeed(2.0) ));
 
     /* Field centric removed for auto bandaid
     new JoystickButton(m_controller, XboxController.Button.kX.value).
