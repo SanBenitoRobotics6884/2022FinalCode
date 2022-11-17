@@ -78,8 +78,8 @@ public final class Constants {
     }
 
     public static final class Lift {
-        public static final double kMaxVoltageLeft = 9.5;
-        public static final double kMaxVoltageRight = 12;
+        public static final double kMaxVoltageLeft = 12;
+        public static final double kMaxVoltageRight = 11;
         public static final double kMaxHeight = 340; //encoder counts
 
         public static final int kSmartMotionSlot = 0;

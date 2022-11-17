@@ -20,14 +20,14 @@ public class LiftSubsystem extends SubsystemBase {
   private RelativeEncoder m_leftLiftEncoder;
   private RelativeEncoder m_rightLiftEncoder;
 
-  private DigitalInput m_leftLimit = new DigitalInput(Constants.Lift.kLeftLimitPort);
-  private DigitalInput m_rightLimit = new DigitalInput(Constants.Lift.kRightLimitPort);
+   private DigitalInput m_leftLimit = new DigitalInput(Constants.Lift.kLeftLimitPort);
+   private DigitalInput m_rightLimit = new DigitalInput(Constants.Lift.kRightLimitPort);
 
   private double prevLiftSpeed = 0;
   private boolean isolateLeftArm = false;
   private boolean isolateRightArm = false;
-  private boolean leftHasZeroed = false;
-  private boolean rightHasZeroed = false;
+   private boolean leftHasZeroed = false;
+   private boolean rightHasZeroed = false;
 
   public LiftSubsystem() {
     m_leftLiftMtr.restoreFactoryDefaults();
@@ -42,19 +42,23 @@ public class LiftSubsystem extends SubsystemBase {
     m_rightLiftEncoder = m_rightLiftMtr.getEncoder();
 
     m_leftLiftEncoder = m_leftLiftMtr.getEncoder();
+
+    m_leftLiftEncoder.setPosition(0);
+    m_rightLiftEncoder.setPosition(0);
   }
 
   @Override
   public void periodic() {
-    if (!m_leftLimit.get()) {
-      m_leftLiftEncoder.setPosition(0);
-      leftHasZeroed = true;
-    }
-    if (!m_rightLimit.get()) {
-      m_rightLiftEncoder.setPosition(0);
-      rightHasZeroed = true;
-    }
+     if (!m_leftLimit.get()) {
+       m_leftLiftEncoder.setPosition(0);
+       leftHasZeroed = true;
+     }
+     if (!m_rightLimit.get()) {
+       m_rightLiftEncoder.setPosition(0);
+       rightHasZeroed = true;
+     }
     // This method will be called once per scheduler run
+    //Uncommented
   }
 
   public void openLoopLift(double speed) {
@@ -68,18 +72,18 @@ public class LiftSubsystem extends SubsystemBase {
     
     if (speed < 0) {
 
-      if (!isolateRightArm && m_leftLimit.get()) {
+      if (!isolateRightArm && m_leftLiftEncoder.getPosition() > 0) {
         m_leftLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageLeft);
       } else {
         m_leftLiftMtr.setVoltage(0);
       }
-      if (!isolateLeftArm && m_rightLimit.get()) {
+      if (!isolateLeftArm && m_rightLiftEncoder.getPosition() > 0) {
         m_rightLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageRight);
       } else {
         m_rightLiftMtr.setVoltage(0);
       }
 
-    } else if (leftHasZeroed && rightHasZeroed) { // Extending Lift
+    } else if (true){//(leftHasZeroed && rightHasZeroed) { // Extending Lift
       if (!isolateRightArm && m_leftLiftEncoder.getPosition() < Constants.Lift.kMaxHeight) {
         m_leftLiftMtr.setVoltage(speed * Constants.Lift.kMaxVoltageLeft);
       } else {

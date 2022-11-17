@@ -45,8 +45,6 @@ public class FeedbackSubsystem extends SubsystemBase {
     cam0 = CameraServer.startAutomaticCapture(0);
     cam0.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
     cam0.setExposureManual(45);    
-
-
   }
 
   @Override

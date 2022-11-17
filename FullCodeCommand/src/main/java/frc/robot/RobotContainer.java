@@ -69,7 +69,9 @@ public class RobotContainer {
       () -> m_controller.getRightX())
     );
 
-    m_lift.setDefaultCommand(new ManualLift(m_lift, () -> m_joystick.getY() ));
+    SmartDashboard.putData("Gyro Data", m_gyro);
+
+    //m_lift.setDefaultCommand(new ManualLift(m_lift, () -> m_joystick.getY() ));
   }
 
   /**
@@ -114,6 +116,7 @@ public class RobotContainer {
       .whenPressed(new InstantCommand(() -> m_cargo.setEvacStatus(true) ))
       .whenReleased(new InstantCommand(() -> m_cargo.setEvacStatus(false) ));
 
+    
     new JoystickButton(m_joystick, 3)
       .whenPressed(new InstantCommand(() -> m_lift.setLeftArmStatus(true) ))
       .whenReleased(new InstantCommand(() -> m_lift.setLeftArmStatus(false) ));
@@ -121,6 +124,8 @@ public class RobotContainer {
     new JoystickButton(m_joystick, 4)
       .whenPressed(new InstantCommand(() -> m_lift.setRightArmStatus(true) ))
       .whenReleased(new InstantCommand(() -> m_lift.setRightArmStatus(false) ));
+    
+    //Uncommented
   }
 
   public Command getAutonomousCommand() {

@@ -22,6 +22,8 @@ import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -34,6 +36,9 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
+
+  
+
   
   Translation2d m_frontLeftLocation = new Translation2d(0.254, 0.254);
   Translation2d m_frontRightLocation = new Translation2d(0.254, -0.254);
@@ -96,6 +101,10 @@ public class Robot extends TimedRobot {
   private static final double kCurrentRatioRumbleThreshold = 3;
   private static final int kDrivePowerChannels[] = {4,7,16,19};
 
+  //lED constants
+  
+  
+
   private boolean isEvac = false;
   private boolean isLaunching = false;
   private boolean isIntaking = false;
@@ -109,7 +118,7 @@ public class Robot extends TimedRobot {
   private XboxController m_controller = new XboxController(1);
 
   private WPI_VictorSPX m_uprStorageMtr = new WPI_VictorSPX(7);
-  private WPI_VictorSPX m_lwrStorageMtr = new WPI_VictorSPX(5);
+  private CANSparkMax m_lwrStorageMtr = new CANSparkMax(30, MotorType.kBrushless);
 
   private CANSparkMax m_leftLiftMtr = new CANSparkMax(kLeftLiftID, MotorType.kBrushless);
   private CANSparkMax m_rightLiftMtr = new CANSparkMax(kRightLiftID, MotorType.kBrushless);
@@ -157,11 +166,13 @@ public class Robot extends TimedRobot {
  
   @Override
   public void robotInit() {
+    
+    
     m_leftLiftMtr.restoreFactoryDefaults();
     m_rightLiftMtr.restoreFactoryDefaults();
 
     m_leftLiftMtr.setInverted(true);
-    m_rightLiftMtr.setInverted(false);
+    m_rightLiftMtr.setInverted(true); //was originally set to false
 
     m_leftAcuator.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
     m_rightAcuator.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
@@ -196,7 +207,7 @@ public class Robot extends TimedRobot {
     m_leftAcuator.setSpeed(kRatchetDeploy);
     m_rightAcuator.setSpeed(kRatchetDeploy);
 
-    m_lwrStorageMtr.configFactoryDefault();
+    m_lwrStorageMtr.restoreFactoryDefaults();
     m_uprStorageMtr.configFactoryDefault();
     m_leftBack.restoreFactoryDefaults();
     m_leftFront.restoreFactoryDefaults();
@@ -221,7 +232,8 @@ public class Robot extends TimedRobot {
 
     m_rightBack.setInverted(true);
     m_rightFront.setInverted(true);
-    m_lwrStorageMtr.setInverted(true);
+    m_lwrStorageMtr.setInverted(false);
+    m_uprStorageMtr.setInverted(true);
     m_uprStorageMtr.setNeutralMode(NeutralMode.Coast);
 
     m_gyro.calibrate();
@@ -236,6 +248,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+   
+  
     SmartDashboard.putNumber("Left Position", m_leftLiftEncoder.getPosition());
     SmartDashboard.putNumber("Right Position", m_rightLiftEncoder.getPosition());
     SmartDashboard.putBoolean("Right LS", m_rightLimit.get());
@@ -255,17 +269,17 @@ public class Robot extends TimedRobot {
       maxDriveSpdScalar = kFastSpd;
    }
 
-    if (m_joystick.getTrigger()) {
+    if (m_controller.getAButton()) {
       isLaunching = true;
     } else {
       isLaunching = false;
     }
-    if (m_joystick.getRawButton(2)) {
+    if (m_controller.getBButton()) {
       isIntaking = true;
     } else {
       isIntaking = false;
     }
-    if (m_joystick.getRawButton(7)) {
+    if (m_controller.getXButton()) {
       isEvac = true;
     } else {
       isEvac = false;
@@ -339,6 +353,7 @@ public class Robot extends TimedRobot {
     // Update the pose
     m_pose = m_odometry.update(gyroAngle, wheelSpeeds);
   }
+  
 
   @Override
   public void autonomousInit() {
@@ -353,11 +368,14 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    
+  }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+   
     if (isPid) {
       if (m_joystick.getTrigger()) {
         closedLoopLift();
@@ -390,7 +408,7 @@ public class Robot extends TimedRobot {
     }
 
     if (mode == DriveMode.DEFAULT) {
-      m_drive.driveCartesian(yspeed, xspeed, zrot);
+      m_drive.driveCartesian(yspeed/4.5, xspeed/4.5, zrot/4.5);//FOR EVENTS divide by 4.5 otherwise get rid of the divide by 4.5
     } else if (mode == DriveMode.FIELD_CENTRIC){
       m_drive.driveCartesian(yspeed, xspeed, zrot, m_gyro.getAngle());
     } else if (mode == DriveMode.GYRO_ASSIST) {
@@ -400,10 +418,10 @@ public class Robot extends TimedRobot {
     }
 
     if (isIntaking) {
-      m_lwrStorageMtr.set(ControlMode.PercentOutput, lwrMtrSpd);
+      m_lwrStorageMtr.set( lwrMtrSpd);
       m_intakeMotor.setVoltage(intkVltge);
     } else {
-      m_lwrStorageMtr.set(ControlMode.PercentOutput, 0);
+      m_lwrStorageMtr.set( 0);
       m_intakeMotor.setVoltage(0);
     }
 
@@ -414,8 +432,8 @@ public class Robot extends TimedRobot {
       }
 
       if (Timer.getFPGATimestamp() > lwrStorageTargetTime){
-        m_lwrStorageMtr.set(ControlMode.PercentOutput, lwrMtrSpd);
-      } else m_lwrStorageMtr.set(ControlMode.PercentOutput, 0);
+        m_lwrStorageMtr.set( lwrMtrSpd);
+      } else m_lwrStorageMtr.set( 0);
     } else {
       m_uprStorageMtr.set(ControlMode.PercentOutput, 0);
     }
@@ -423,7 +441,7 @@ public class Robot extends TimedRobot {
     if(isEvac) {
       m_intakeMotor.setVoltage(-intkVltge);
       m_lwrStorageMtr.set(-lwrMtrSpd);
-      m_uprStorageMtr.set(-lwrMtrSpd);
+      m_uprStorageMtr.set(lwrMtrSpd);
     }
 
     prevTrigger = m_joystick.getTrigger();

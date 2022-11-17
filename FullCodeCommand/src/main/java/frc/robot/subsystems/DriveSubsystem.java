@@ -125,6 +125,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightFront.setInverted(true);
 
     m_TurnPID.disableContinuousInput();
+
+    SmartDashboard.putData(m_drive);
   }
 
   @Override
